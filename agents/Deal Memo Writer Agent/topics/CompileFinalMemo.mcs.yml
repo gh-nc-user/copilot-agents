@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_CompileFinalMemo_t1v8
   intent:
-    triggerQueries:
-      - compile
+  id: OnRecognizedIntent_CompileFinalMemo_h9s8
   actions:
     - kind: SetVariable
       id: SetVariable_formattedDate

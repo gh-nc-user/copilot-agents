@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_CompetitiveLandscapeSection_d6f4
   intent:
-    triggerQueries:
-      - competitive
+  id: OnRecognizedIntent_CompetitiveLandscapeSection_g8r7
   actions:
     - kind: SendActivity
       id: SendActivity_competitive_processing

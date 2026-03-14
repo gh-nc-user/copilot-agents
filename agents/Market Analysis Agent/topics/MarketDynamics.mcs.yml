@@ -5,6 +5,7 @@ id: AdaptiveDialog_MarketDynamics
 topicId: MarketDynamics
 beginDialog:
   kind: OnDialogCall
+  id: OnDialogCall_MarketDynamics_c4m3
   actions:
     # 1. Intro to market dynamics
     - kind: SendActivity

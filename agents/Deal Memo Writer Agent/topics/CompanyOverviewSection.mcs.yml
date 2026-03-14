@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_CompanyOverviewSection_h2c9
   intent:
-    triggerQueries:
-      - company
+  id: OnRecognizedIntent_CompanyOverviewSection_f7q6
   actions:
     - kind: Question
       id: Question_stage

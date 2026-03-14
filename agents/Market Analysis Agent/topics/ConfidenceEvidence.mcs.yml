@@ -5,6 +5,7 @@ id: AdaptiveDialog_ConfidenceEvidence
 topicId: ConfidenceEvidence
 beginDialog:
   kind: OnDialogCall
+  id: OnDialogCall_ConfidenceEvidence_a2j1
   actions:
     # 1. SetVariable: Evidence sources count
     - kind: SetVariable

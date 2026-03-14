@@ -1,4 +1,5 @@
-﻿displayName: Deal Orchestrator (PM)
+﻿kind: BotEntity
+displayName: Deal Orchestrator (PM)
 schemaName: copilots_header_67a52
 accessControlPolicy: GroupMembership
 authenticationMode: Integrated

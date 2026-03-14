@@ -1,3 +1,4 @@
+kind: BotEntity
 displayName: Market Analysis Agent
 schemaName: copilots_header_67a52
 accessControlPolicy: GroupMembership

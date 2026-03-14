@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_MarketAnalysisSection_q3r7
   intent:
-    triggerQueries:
-      - market
+  id: OnRecognizedIntent_MarketAnalysisSection_k3v2
   actions:
     - kind: SendActivity
       id: SendActivity_market_processing

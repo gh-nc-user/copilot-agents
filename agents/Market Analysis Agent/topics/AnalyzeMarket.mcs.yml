@@ -5,6 +5,7 @@ id: AdaptiveDialog_AnalyzeMarket
 topicId: AnalyzeMarket
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_AnalyzeMarket_k9m2
   intent:
     triggerQueries:
       - "Analyze market"

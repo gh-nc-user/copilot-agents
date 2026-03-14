@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_ValidateInputs_x8b3
   intent:
-    triggerQueries:
-      - validate
+  id: OnRecognizedIntent_ValidateInputs_n6y5
   actions:
     - kind: SetVariable
       id: SetVariable_marketValid

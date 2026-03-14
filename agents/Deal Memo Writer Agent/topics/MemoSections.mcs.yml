@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_MemoSections_s9j1
   intent:
-    triggerQueries:
-      - sections
+  id: OnRecognizedIntent_MemoSections_l4w3
   actions:
     - kind: SendActivity
       id: SendActivity_generating

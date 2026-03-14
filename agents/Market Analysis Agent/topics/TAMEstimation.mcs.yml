@@ -5,6 +5,7 @@ id: AdaptiveDialog_TAMEstimation
 topicId: TAMEstimation
 beginDialog:
   kind: OnDialogCall
+  id: OnDialogCall_TAMEstimation_d5n4
   actions:
     # 1. Intro to TAM/SAM/SOM estimation
     - kind: SendActivity

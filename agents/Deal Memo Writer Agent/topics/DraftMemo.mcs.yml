@@ -2,12 +2,12 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_DraftMemo_m7y2
   intent:
-    triggerQueries:
-      - Draft memo
       - Create memo
       - Write investment memo
       - Synthesize specialist outputs
+  id: OnRecognizedIntent_DraftMemo_i1t9
   actions:
     - kind: SendActivity
       id: SendActivity_welcome

@@ -5,6 +5,7 @@ id: AdaptiveDialog_EvidenceAssessment
 topicId: EvidenceAssessment
 beginDialog:
   kind: OnDialogCall
+  id: OnDialogCall_EvidenceAssessment_b3k2
   actions:
     # 1. Intro to evidence assessment
     - kind: SendActivity

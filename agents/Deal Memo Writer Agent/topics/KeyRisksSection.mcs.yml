@@ -2,9 +2,9 @@
 kind: AdaptiveDialog
 beginDialog:
   kind: OnRecognizedIntent
+  id: OnRecognizedIntent_KeyRisksSection_n5k6
   intent:
-    triggerQueries:
-      - risks
+  id: OnRecognizedIntent_KeyRisksSection_j2u1
   actions:
     - kind: Question
       id: Question_userRisks
