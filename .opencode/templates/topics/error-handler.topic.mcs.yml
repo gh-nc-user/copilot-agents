@@ -1,0 +1,20 @@
+# Error Handler Topic Template
+# Use for OnError - handles errors gracefully
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_error_handler
+beginDialog:
+  kind: OnError
+  actions:
+    - kind: SendActivity
+      id: SendActivity_error
+      activity: "I apologize, but something went wrong. Let me try to help you again."
+    
+    - kind: Question
+      id: Question_error
+      variable: Topic.ErrorChoice
+      prompt: "What would you like to do?"
+      options:
+        - "Start over"
+        - "Try again"
+        - "Contact support"

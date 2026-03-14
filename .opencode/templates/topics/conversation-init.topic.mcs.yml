@@ -1,0 +1,24 @@
+# Conversation Init Topic Template
+# Use for OnConversationStart with JIT initialization (glossary, user context)
+# Combines multiple initialization patterns into a single topic
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_conversation_init
+beginDialog:
+  kind: OnConversationStart
+  actions:
+    # Initialize global variables here
+    - kind: SetVariable
+      id: SetVariable_init
+      variable: init:Global.ConversationStarted
+      value: "=true"
+    
+    # Add your initialization logic here:
+    # - Load glossary from SharePoint
+    # - Load user profile from M365
+    # - Set date context
+    # - etc.
+    
+    - kind: SendActivity
+      id: SendActivity_welcome
+      activity: "Hello! How can I help you today?"

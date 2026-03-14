@@ -1,0 +1,8 @@
+# Name: Memo Templates & Examples
+# Reference templates and sample IC-style memos for formatting and structure guidance
+kind: KnowledgeSourceConfiguration
+source:
+  kind: SharePointSearchSource
+  site: https://microsoft-my.sharepoint.com/:f:/r/personal/user_microsoft_com/Documents/Investment%20Memos
+  additionalSearchTerms: |
+    investment memo template; deal memo structure; IC memo example

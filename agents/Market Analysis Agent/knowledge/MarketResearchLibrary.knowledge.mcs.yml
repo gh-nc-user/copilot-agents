@@ -1,0 +1,48 @@
+kind: KnowledgeSourceConfiguration
+id: knowledge_sharepoint_market_research
+displayName: Market Research Library - SharePoint
+description: |
+  Internal market research library for accessing historical investment analysis,
+  deal memos, investment theses, and past market research conducted by the firm.
+  Grounds market analysis in internal deal history and validated assumptions.
+source:
+  kind: SharePoint
+  siteUrl: "{SharePoint_Market_Research_Site_URL}"
+  libraryPath: "Shared Documents/Market Research"
+  folderPatterns:
+    - "market-research/*"
+    - "deal-memos/*"
+    - "investment-theses/*"
+    - "sector-analysis/*"
+    - "competitor-research/*"
+metadata:
+  contentTypes:
+    - "PDF"
+    - "Word Documents"
+    - "Excel Spreadsheets"
+    - "PowerPoint Presentations"
+  folders:
+    - name: "market-research"
+      description: "Historical market sizing and TAM analysis"
+    - name: "deal-memos"
+      description: "Completed deal analysis and post-mortems"
+    - name: "investment-theses"
+      description: "Sector and company investment theses"
+    - name: "sector-analysis"
+      description: "Industry and vertical analysis reports"
+    - name: "competitor-research"
+      description: "Competitive landscape and benchmarking"
+  updateFrequency: "On-demand"
+  reliability: "Very High - Internal validated research"
+configuration:
+  enableAuthentication: true
+  accessLevel: "Internal"
+  indexingStrategy: "Full-text search with metadata"
+  refreshInterval: "Weekly"
+  searchableMetadata:
+    - "author"
+    - "sector"
+    - "company"
+    - "deal_date"
+    - "tam_estimate"
+    - "growth_rate"

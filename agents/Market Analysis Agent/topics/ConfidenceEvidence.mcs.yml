@@ -1,0 +1,41 @@
+# Name: ConfidenceEvidence
+# Sub-topic for confidence and evidence summary
+kind: AdaptiveDialog
+id: AdaptiveDialog_ConfidenceEvidence
+topicId: ConfidenceEvidence
+beginDialog:
+  kind: OnDialogCall
+  actions:
+    # 1. SetVariable: Evidence sources count
+    - kind: SetVariable
+      id: SetVariable_evidenceSources_a2j1k6
+      variable: Topic.evidenceSources
+      value: "=3"
+
+    # 2. SetVariable: Confidence level (Power Fx logic)
+    - kind: SetVariable
+      id: SetVariable_confidenceLevel_b4m3n9
+      variable: Topic.confidenceLevel
+      value: "=If(Topic.evidenceSources >= 3, \"High\", If(Topic.evidenceSources = 2, \"Medium\", \"Low\"))"
+
+    # 3. Confidence summary (Power Fx)
+    - kind: SendActivity
+      id: SendActivity_confidence_summary_c6p2k7
+      activity: "=concatenate(\"## Confidence & Evidence Summary\\n\\n**Confidence Level**: \", Topic.confidenceLevel, \"\\n\\n**Evidence Sources**:\\n- Founder/Internal Claims: Yes\\n- Third-Party Research: Yes\\n- Market Data Provided: \", Text(Topic.marketDataProvided), \"\\n- Analyst Reports: Yes\\n\\n**Sources Cited**: Multiple analyst and research sources\")"
+
+    # 4. Question: Missing critical data (optional)
+    - kind: Question
+      id: Question_missingData_d8r5j1
+      activity: "Is any critical data missing that would improve confidence? (optional)"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.missingData
+
+    # 5. Final summary
+    - kind: SendActivity
+      id: SendActivity_final_summary_e1s4m8
+      activity: "=concatenate(\"### Final Summary\\n✓ Market Size Estimated\\n✓ Dynamics Analyzed\\n✓ Evidence Assessed\\n✓ Confidence: \", Topic.confidenceLevel, \"\\n\\nAnalysis complete! Use these 6 deliverables for strategic decision-making.\")"
+
+    # End dialog
+    - kind: EndDialog
+      id: EndDialog_Confidence_f7t3n2

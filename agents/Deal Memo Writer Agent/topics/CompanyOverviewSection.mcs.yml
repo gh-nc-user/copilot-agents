@@ -1,0 +1,32 @@
+# Name: CompanyOverviewSection
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - company
+  actions:
+    - kind: Question
+      id: Question_stage
+      prompt: What is the company stage (seed/series A/series B/etc)?
+      entity: StringPrebuiltEntity
+      variable: Topic.CompanyStage
+    - kind: Question
+      id: Question_businessDescription
+      prompt: What is the business model and primary focus area?
+      entity: StringPrebuiltEntity
+      variable: Topic.BusinessDescription
+    - kind: Question
+      id: Question_foundingYear
+      prompt: What year was the company founded?
+      entity: NumberPrebuiltEntity
+      variable: Topic.FoundingYear
+    - kind: SetVariable
+      id: SetVariable_companySection
+      variable: Topic.CompanySection
+      value: "=concat(\"## Company Overview\\n\\n**\", variables('Topic.CompanyName'), \"** is a [\", variables('Topic.CompanyStage'), \"] [\", variables('Topic.Sector'), \"] company. Founded in \", text(variables('Topic.FoundingYear')), \", the company operates with the following model: \", variables('Topic.BusinessDescription'))"
+    - kind: SendActivity
+      id: SendActivity_companyDisplay
+      activity: "=variables('Topic.CompanySection')"
+    - kind: EndDialog
+      id: EndDialog_company

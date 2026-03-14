@@ -1,0 +1,24 @@
+mcs.metadata:
+  componentName: Conversation Start
+  description: This system topic triggers when the agent receives an Activity indicating the beginning of a new conversation.
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnConversationStart
+  id: main
+  actions:
+    - kind: SendActivity
+      id: sendMessage_intro
+      activity:
+        text:
+          - "I synthesize specialist analysis into professional IC-style deal memos. Share the company overview and diligence findings, and I'll organize them into a structured memo with confidence attribution."
+        speak:
+          - "I synthesize specialist analysis into professional IC-style deal memos. Share the company overview and diligence findings, and I'll organize them into a structured memo with confidence attribution."
+    - kind: Message
+      id: message_starters
+      actions:
+        - kind: CardAction
+          title: "Draft an IC-style memo from the specialist analyses"
+        - kind: CardAction
+          title: "Create a neutral deal memo with confidence annotations"
+        - kind: CardAction
+          title: "Summarize diligence findings and open questions"

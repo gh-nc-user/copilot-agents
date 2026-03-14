@@ -1,0 +1,34 @@
+kind: KnowledgeSourceConfiguration
+id: knowledge_websearch_tam
+displayName: Web Search - Market Research
+description: |
+  Web-based market research knowledge source for accessing analyst reports,
+  market data, and competitive intelligence from Gartner, CB Insights, IDC,
+  and other industry research firms.
+source:
+  kind: Website
+  searchPatterns:
+    - "TAM market size {sector}"
+    - "market growth trends {industry}"
+    - "competitor landscape {category}"
+    - "{sector} market analysis"
+    - "industry report {keyword}"
+metadata:
+  contentTypes:
+    - "Analyst Reports"
+    - "Market Research"
+    - "Industry Data"
+    - "Competitive Intelligence"
+  sources:
+    - "Gartner Research"
+    - "CB Insights"
+    - "IDC Market Research"
+    - "Forrester Research"
+    - "McKinsey"
+    - "Bain & Company"
+  updateFrequency: "Real-time"
+  reliability: "High - Third-party analyst sources"
+configuration:
+  enableWebBrowsing: true
+  indexingStrategy: "Real-time"
+  refreshInterval: "Daily"

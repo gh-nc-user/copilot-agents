@@ -1,0 +1,25 @@
+# Search Topic Template
+# Use for topics that search knowledge sources and return answers
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_search_TOPICNAME
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - "search trigger 1"
+      - "search trigger 2"
+      - "search trigger 3"
+    triggerQueriesCondensed:
+      - "search condensed 1"
+      - "search condensed 2"
+  actions:
+    # For generative orchestration, use SearchAndSummarizeContent
+    # For simple knowledge search, let the orchestrator handle it
+    - kind: SearchAndSummarizeContent
+      id: SearchAndSummarizeContent_main
+      # Optionally specify query:
+      # query: "=Topic.SearchQuery"
+      # Optionally filter knowledge sources:
+      # knowledgeSourceIds:
+      #   - knowledge_source_id

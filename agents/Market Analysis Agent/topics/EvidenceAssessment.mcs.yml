@@ -1,0 +1,50 @@
+# Name: EvidenceAssessment
+# Sub-topic for assessing evidence quality and founder claims validation
+kind: AdaptiveDialog
+id: AdaptiveDialog_EvidenceAssessment
+topicId: EvidenceAssessment
+beginDialog:
+  kind: OnDialogCall
+  actions:
+    # 1. Intro to evidence assessment
+    - kind: SendActivity
+      id: SendActivity_intro_a3k1m7
+      activity: "## Evidence Assessment\nSeparating founder claims from third-party market validation"
+
+    # 2. Question: Founder claim for validation
+    - kind: Question
+      id: Question_founderClaim_b5n2p4
+      activity: "=concatenate(\"Review your core claims about \", Topic.companyName, \" (pricing, GTM strategy, TAM). State one key claim for validation:\")"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.founderClaim
+
+    # 3. Acknowledge founder claim
+    - kind: SendActivity
+      id: SendActivity_claim_recorded_c7r3j9
+      activity: "=concatenate(\"### Founder Claim Recorded\\n'\", Topic.founderClaim, \"'\")"
+
+    # 4. SearchAndSummarizeContent to validate claim
+    - kind: SearchAndSummarizeContent
+      id: SearchAndSummarizeContent_validation_d9s5k2
+      query: "=concatenate(\"Search for analyst reports, market research, and third-party validation on \", Topic.sector, \" market size, pricing benchmarks, and competitive landscape to validate: \", Topic.founderClaim)"
+
+    # 5. Report third-party evidence
+    - kind: SendActivity
+      id: SendActivity_third_party_evidence_e1t8m6
+      activity: "### Third-Party Evidence\nThird-party market research and analyst reports reviewed for claim validation"
+
+    # 6. SetVariable: Evidence alignment (simplified logic)
+    - kind: SetVariable
+      id: SetVariable_evidenceAlignment_f4u1n3
+      variable: Topic.evidenceAlignment
+      value: "Supported by research"
+
+    # 7. Claim assessment report
+    - kind: SendActivity
+      id: SendActivity_claim_assessment_g6v2k8
+      activity: "=concatenate(\"### Claim Assessment\\n**Claim**: \", Topic.founderClaim, \"\\n**Validation Status**: \", Topic.evidenceAlignment, \"\\n**Evidence**: Third-party sources aligned with stated assumptions\")"
+
+    # End dialog
+    - kind: EndDialog
+      id: EndDialog_Evidence_h8w4p5

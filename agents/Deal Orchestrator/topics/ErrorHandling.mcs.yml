@@ -1,0 +1,177 @@
+# Name: Error Handling & Retry Logic
+# Description: Handles failures, timeouts, and incomplete outputs from specialist agents
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Handle agent errors
+  id: Orchestrator_ErrorHandling_001
+  actions:
+    # Check for Market Agent timeout or failure
+    - kind: ConditionGroup
+      id: ConditionGroup_market_error
+      condition: "=IsBlank(Topic.MarketAgentResult) || IsBlank(Topic.MarketAgentFindings)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_market_error_flag
+          variable: Topic.MarketAgentFailed
+          value: "=true"
+        - kind: SendActivity
+          id: SendActivity_market_timeout
+          activity:
+            text:
+              - "⚠️ Market Analysis Agent did not return a complete response."
+              - "Possible causes: timeout, missing company information, or incomplete data."
+        
+        # Check retry count
+        - kind: ConditionGroup
+          id: ConditionGroup_market_retry_check
+          condition: "=IsBlank(Topic.MarketRetryCount) || Topic.MarketRetryCount < 1"
+          actions:
+            - kind: SetVariable
+              id: SetVariable_market_retry_count
+              variable: Topic.MarketRetryCount
+              value: "=if(IsBlank(Topic.MarketRetryCount), 1, Topic.MarketRetryCount + 1)"
+            - kind: SendActivity
+              id: SendActivity_market_retrying
+              activity:
+                text:
+                  - "🔄 Retrying Market Analysis Agent (Attempt ${Topic.MarketRetryCount} of 2)..."
+            # Retry the Market Agent call
+            - kind: BeginDialog
+              id: BeginDialog_market_agent_retry
+              dialog: Market Analysis Agent
+              input:
+                variables:
+                  - CompanyName: Topic.CompanyName
+                  - Sector: Topic.Sector
+                  - Stage: Topic.Stage
+                  - DocumentDescription: Topic.DocumentDescription
+              resultVariable: Topic.MarketAgentResult
+            - kind: SetVariable
+              id: SetVariable_market_output_retry
+              variable: Topic.MarketAgentFindings
+              value: "=Topic.MarketAgentResult"
+          elseActions:
+            - kind: SendActivity
+              id: SendActivity_market_max_retries
+              activity:
+                text:
+                  - "❌ Market Analysis Agent failed after 2 attempts."
+                  - "Please try again later or provide additional context about the company."
+            - kind: SetVariable
+              id: SetVariable_market_retry_exhausted
+              variable: Topic.MarketRetryExhausted
+              value: "=true"
+    
+    # Check for Competitive Agent timeout or failure
+    - kind: ConditionGroup
+      id: ConditionGroup_competitive_error
+      condition: "=IsBlank(Topic.CompetitiveAgentResult) || IsBlank(Topic.CompetitiveAgentFindings)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_competitive_error_flag
+          variable: Topic.CompetitiveAgentFailed
+          value: "=true"
+        - kind: SendActivity
+          id: SendActivity_competitive_timeout
+          activity:
+            text:
+              - "⚠️ Competitive Landscape Agent did not return a complete response."
+              - "Possible causes: timeout, insufficient market data, or connectivity issues."
+        
+        # Check retry count
+        - kind: ConditionGroup
+          id: ConditionGroup_competitive_retry_check
+          condition: "=IsBlank(Topic.CompetitiveRetryCount) || Topic.CompetitiveRetryCount < 1"
+          actions:
+            - kind: SetVariable
+              id: SetVariable_competitive_retry_count
+              variable: Topic.CompetitiveRetryCount
+              value: "=if(IsBlank(Topic.CompetitiveRetryCount), 1, Topic.CompetitiveRetryCount + 1)"
+            - kind: SendActivity
+              id: SendActivity_competitive_retrying
+              activity:
+                text:
+                  - "🔄 Retrying Competitive Landscape Agent (Attempt ${Topic.CompetitiveRetryCount} of 2)..."
+            # Retry the Competitive Agent call
+            - kind: BeginDialog
+              id: BeginDialog_competitive_agent_retry
+              dialog: Competitive Landscape Agent
+              input:
+                variables:
+                  - CompanyName: Topic.CompanyName
+                  - Sector: Topic.Sector
+                  - Stage: Topic.Stage
+                  - DocumentDescription: Topic.DocumentDescription
+              resultVariable: Topic.CompetitiveAgentResult
+            - kind: SetVariable
+              id: SetVariable_competitive_output_retry
+              variable: Topic.CompetitiveAgentFindings
+              value: "=Topic.CompetitiveAgentResult"
+          elseActions:
+            - kind: SendActivity
+              id: SendActivity_competitive_max_retries
+              activity:
+                text:
+                  - "❌ Competitive Landscape Agent failed after 2 attempts."
+                  - "This may impact the completeness of your analysis."
+            - kind: SetVariable
+              id: SetVariable_competitive_retry_exhausted
+              variable: Topic.CompetitiveRetryExhausted
+              value: "=true"
+    
+    # Check for missing Confidence & Evidence sections
+    - kind: ConditionGroup
+      id: ConditionGroup_confidence_evidence_check
+      condition: "=!IsBlank(Topic.MarketAgentFindings) && Find(Topic.MarketAgentFindings, \"Confidence & Evidence\") = 0"
+      actions:
+        - kind: SendActivity
+          id: SendActivity_market_missing_confidence
+          activity:
+            text:
+              - "⚠️ Market Analysis missing 'Confidence & Evidence' section."
+              - "This section is required for proper diligence documentation."
+        - kind: SetVariable
+          id: SetVariable_market_confidence_missing
+          variable: Topic.MarketConfidenceMissing
+          value: "=true"
+    
+    # Check for low confidence levels
+    - kind: ConditionGroup
+      id: ConditionGroup_low_confidence
+      condition: "=!IsBlank(Topic.MarketAgentFindings) && Find(Topic.MarketAgentFindings, \"Low\") > 0"
+      actions:
+        - kind: SendActivity
+          id: SendActivity_low_confidence_warning
+          activity:
+            text:
+              - "⚠️ Low Confidence Level Detected:"
+              - "Market or Competitive analysis indicates low confidence in findings."
+              - "This may require additional research or expert review before proceeding."
+        - kind: SetVariable
+          id: SetVariable_low_confidence_flag
+          variable: Topic.LowConfidenceDetected
+          value: "=true"
+    
+    # Decision point: Can we proceed?
+    - kind: ConditionGroup
+      id: ConditionGroup_can_proceed
+      condition: "=!Topic.MarketRetryExhausted && !Topic.CompetitiveRetryExhausted && !Topic.MarketConfidenceMissing"
+      actions:
+        - kind: SendActivity
+          id: SendActivity_proceed_decision_positive
+          activity:
+            text:
+              - "✓ All critical issues resolved. Ready to generate memo."
+      elseActions:
+        - kind: SendActivity
+          id: SendActivity_proceed_decision_negative
+          activity:
+            text:
+              - "❌ Critical issues detected. Escalating to human review."
+        # Route to escalation
+        - kind: GoToDialog
+          id: GoToDialog_escalate_error
+          dialog: Escalate

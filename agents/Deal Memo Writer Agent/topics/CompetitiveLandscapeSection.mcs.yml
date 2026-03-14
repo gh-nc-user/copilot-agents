@@ -1,0 +1,20 @@
+# Name: CompetitiveLandscapeSection
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - competitive
+  actions:
+    - kind: SendActivity
+      id: SendActivity_competitive_processing
+      activity: Processing Competitive Landscape from specialist output...
+    - kind: SetVariable
+      id: SetVariable_competitiveSection
+      variable: Topic.CompetitiveSection
+      value: =concat("## Competitive Landscape\n\n*(per Competitive Landscape Agent)*\n\n", variables('Topic.CompetitiveAgentOutput'))
+    - kind: SendActivity
+      id: SendActivity_competitiveDisplay
+      activity: =variables('Topic.CompetitiveSection')
+    - kind: EndDialog
+      id: EndDialog_competitive

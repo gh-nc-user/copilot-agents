@@ -1,0 +1,113 @@
+# Topic: Differentiation Claims
+# Purpose: Verify and assess differentiation claims uniqueness
+# Trigger: OnRecognizedIntent
+# GenerativeActionsEnabled: true - uses AutomaticTaskInput and SearchAndSummarizeContent
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_DifferentiationClaims_diff001
+inputType:
+  properties:
+    keyDifferentiator:
+      displayName: keyDifferentiator
+      description: "What is your company's key differentiation? (e.g., speed, cost, unique feature)"
+      type: String
+
+outputType:
+  properties:
+    differentiation:
+      displayName: differentiation
+      description: "Verified differentiation assessment (Deliverable D)"
+      type: String
+    moatRisk:
+      displayName: moatRisk
+      description: "High/Medium/Low - sustainability of differentiation"
+      type: String
+
+inputs:
+  - kind: AutomaticTaskInput
+    id: diff-input-001
+    propertyName: keyDifferentiator
+    description: "What is your company's key differentiation? (e.g., speed, cost, unique feature)"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+beginDialog:
+  kind: OnRecognizedIntent
+  id: OnRecognizedIntent_diff_trigger
+  intent:
+    triggerQueries:
+      - "Assess differentiation"
+      - "Differentiation claims"
+      - "Are our claims unique"
+      - "Verify differentiation"
+    triggerQueriesCondensed:
+      - "assess differentiation"
+      - "differentiation claims"
+      - "claims unique"
+      - "verify differentiation"
+
+  actions:
+    - kind: SendActivity
+      id: diff-sendactivity-001
+      activity: "🔍 Analyzing differentiation claim: **{Topic.keyDifferentiator}**"
+
+    - kind: SendActivity
+      id: diff-sendactivity-002
+      activity: "Verifying claim uniqueness against competitive landscape..."
+
+    - kind: SearchAndSummarizeContent
+      id: diff-searchandsummarize-001
+      query: "Do competitors have {Topic.keyDifferentiator}? Competitive feature comparison and market assessment. List which competitors offer this feature/capability and how their implementation differs. Assess market uniqueness. Sources: G2 reviews, vendor marketing, TrustRadius, Capterra, industry reports"
+      outputs:
+        - kind: Variable
+          id: diff-variable-001
+          variable: Topic.DifferentiationAnalysis
+
+    - kind: SendActivity
+      id: diff-sendactivity-003
+      activity: "**Verification Results:**\n\n{Topic.DifferentiationAnalysis}\n\n_Sources: G2, TrustRadius, vendor materials, industry analysis_"
+
+    - kind: Question
+      id: diff-question-001
+      variable: Topic.UniquenessLevel
+      prompt: "Based on market research, how unique is this differentiation?"
+      options:
+        - "Unique - we're the only ones"
+        - "Partially unique - few competitors have it"
+        - "Widely available - many competitors have it"
+
+    - kind: ConditionGroup
+      id: diff-condition-001
+      conditions:
+        - kind: Condition
+          expression: "=Topic.UniquenessLevel = \"Unique - we're the only ones\""
+          actions:
+            - kind: SendActivity
+              id: diff-sendactivity-004
+              activity: "✅ **DIFFERENTIATION: UNIQUE**\n\nYour {Topic.keyDifferentiator} appears to be genuinely unique in the market. This is a strong competitive advantage."
+
+            - kind: SendActivity
+              id: diff-sendactivity-005
+              activity: "⚠️ **MOAT RISK: HIGH**\n\nUnique differentiators attract competitive responses. Consider:\n• Patent protection\n• Switching costs\n• Technical barriers\n• Network effects\n\nMonitor competitors closely for replication."
+
+        - kind: Condition
+          expression: "=Topic.UniquenessLevel = \"Partially unique - few competitors have it\""
+          actions:
+            - kind: SendActivity
+              id: diff-sendactivity-006
+              activity: "◐ **DIFFERENTIATION: PARTIALLY UNIQUE**\n\nYour {Topic.keyDifferentiator} is valuable but some competitors have developed similar capabilities. Your advantage lies in execution, depth, or integration."
+
+            - kind: SendActivity
+              id: diff-sendactivity-007
+              activity: "⚠️ **MOAT RISK: MEDIUM**\n\nPartial uniqueness provides temporary advantage. Success depends on:\n• Execution excellence\n• Integration depth\n• Customer lock-in\n• Faster innovation cycle\n\nContinuous improvement needed."
+
+        - kind: Condition
+          expression: "=Topic.UniquenessLevel = \"Widely available - many competitors have it\""
+          actions:
+            - kind: SendActivity
+              id: diff-sendactivity-008
+              activity: "❌ **DIFFERENTIATION: WIDELY AVAILABLE**\n\nYour {Topic.keyDifferentiator} is a table-stakes feature in the market. Many competitors offer this capability."
+
+            - kind: SendActivity
+              id: diff-sendactivity-009
+              activity: "⚠️ **MOAT RISK: LOW**\n\nThis feature alone cannot sustain competitive advantage:\n• It's expected by buyers\n• Easily replicated by competitors\n• Insufficient for pricing power\n\n**Action:** Identify unique secondary differentiators or combination advantages."

@@ -1,0 +1,134 @@
+# Name: Call Memo Writer
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Call Deal Memo Writer
+  id: Orchestrator_CallWriter_001
+  actions:
+    # Prepare to call Memo Writer Agent
+    - kind: SendActivity
+      id: SendActivity_writer_calling
+      activity:
+        text:
+          - "📝 Invoking Deal Memo Writer Agent to synthesize the analysis into a professional memo."
+          - "This memo will integrate market insights and competitive analysis without modification."
+    
+    # Call the Deal Memo Writer Agent with BeginDialog
+    - kind: BeginDialog
+      id: BeginDialog_writer_agent
+      dialog: Deal Memo Writer Agent
+      input:
+        variables:
+          - CompanyName: Topic.CompanyName
+          - Sector: Topic.Sector
+          - Stage: Topic.Stage
+          - MarketFindings: Topic.MarketAgentFindings
+          - CompetitiveFindings: Topic.CompetitiveAgentFindings
+          - IntakeSummary: Topic.IntakeSummary
+      resultVariable: Topic.DealMemoResult
+    
+    # Store the memo output
+    - kind: SetVariable
+      id: SetVariable_memo_output
+      variable: Topic.DealMemo
+      value: "=Topic.DealMemoResult"
+    
+    # Check if memo generation was successful
+    - kind: ConditionGroup
+      id: ConditionGroup_memo_success
+      condition: "=!IsBlank(Topic.DealMemo)"
+      actions:
+        - kind: SendActivity
+          id: SendActivity_writer_complete
+          activity:
+            text:
+              - "✓ Deal Memo Writer Agent completed successfully!"
+        
+        # Flag if IC review was requested
+        - kind: ConditionGroup
+          id: ConditionGroup_flag_ic_review
+          condition: "=Topic.FlagForICReview"
+          actions:
+            - kind: SendActivity
+              id: SendActivity_ic_review_flag
+              activity:
+                text:
+                  - "🚩 [IC REVIEW FLAG] Low confidence detected in market or competitive analysis."
+                  - "This memo requires IC discussion before final decision."
+        
+        # Display the memo
+        - kind: SendActivity
+          id: SendActivity_display_memo
+          activity:
+            text:
+              - "${Topic.DealMemo}"
+        
+        # Offer next steps
+        - kind: SendActivity
+          id: SendActivity_next_steps
+          activity:
+            text:
+              - "✅ Your VC diligence analysis is complete."
+              - "Options: Download memo, review findings, or start a new analysis."
+      
+      elseActions:
+        - kind: SendActivity
+          id: SendActivity_memo_generation_failed
+          activity:
+            text:
+              - "❌ Deal Memo Writer Agent failed to generate the memo."
+              - "Possible causes: timeout, incomplete inputs, or service error."
+        
+        # Retry memo generation once
+        - kind: SendActivity
+          id: SendActivity_memo_retry_attempting
+          activity:
+            text:
+              - "🔄 Attempting to regenerate memo..."
+        
+        - kind: BeginDialog
+          id: BeginDialog_writer_agent_retry
+          dialog: Deal Memo Writer Agent
+          input:
+            variables:
+              - CompanyName: Topic.CompanyName
+              - Sector: Topic.Sector
+              - Stage: Topic.Stage
+              - MarketFindings: Topic.MarketAgentFindings
+              - CompetitiveFindings: Topic.CompetitiveAgentFindings
+              - IntakeSummary: Topic.IntakeSummary
+          resultVariable: Topic.DealMemoResult
+        
+        - kind: SetVariable
+          id: SetVariable_memo_output_retry
+          variable: Topic.DealMemo
+          value: "=Topic.DealMemoResult"
+        
+        # Check retry result
+        - kind: ConditionGroup
+          id: ConditionGroup_memo_retry_success
+          condition: "=!IsBlank(Topic.DealMemo)"
+          actions:
+            - kind: SendActivity
+              id: SendActivity_memo_retry_success
+              activity:
+                text:
+                  - "✓ Memo generation succeeded on retry!"
+            - kind: SendActivity
+              id: SendActivity_display_memo_retry
+              activity:
+                text:
+                  - "${Topic.DealMemo}"
+          elseActions:
+            - kind: SendActivity
+              id: SendActivity_memo_retry_failed
+              activity:
+                text:
+                  - "❌ Memo generation failed after retry."
+                  - "Error Summary: The Deal Memo Writer Agent encountered a critical error."
+                  - "Next Steps: Please contact support or try again with additional context."
+            - kind: GoToDialog
+              id: GoToDialog_escalate_memo_failure
+              dialog: Escalate

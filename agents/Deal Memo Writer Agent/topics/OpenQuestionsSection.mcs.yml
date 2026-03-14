@@ -1,0 +1,22 @@
+# Name: OpenQuestionsSection
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - questions
+  actions:
+    - kind: Question
+      id: Question_userQuestions
+      prompt: What open questions or next diligence steps should be prioritized?
+      entity: StringPrebuiltEntity
+      variable: Topic.UserProvidedQuestions
+    - kind: SetVariable
+      id: SetVariable_openQuestionsSection
+      variable: Topic.OpenQuestionsSection
+      value: =concat("## Open Questions & Next Diligence\n\n**From Specialist Analysis:**\nRefer to Confidence & Evidence sections in the market and competitive analyses above for outstanding questions.\n\n**User-Identified Next Steps:**\n", variables('Topic.UserProvidedQuestions'))
+    - kind: SendActivity
+      id: SendActivity_questionsDisplay
+      activity: =variables('Topic.OpenQuestionsSection')
+    - kind: EndDialog
+      id: EndDialog_questions

@@ -1,0 +1,104 @@
+# Name: TAMEstimation
+# Sub-topic for TAM/SAM/SOM estimation using top-down and bottom-up approaches
+kind: AdaptiveDialog
+id: AdaptiveDialog_TAMEstimation
+topicId: TAMEstimation
+beginDialog:
+  kind: OnDialogCall
+  actions:
+    # 1. Intro to TAM/SAM/SOM estimation
+    - kind: SendActivity
+      id: SendActivity_intro_a2k5m7
+      activity: "## TAM/SAM/SOM Estimation\n\nWe'll use two approaches:\n1. **Top-Down**: Industry revenue → Serviceable Market → Obtainable Market\n2. **Bottom-Up**: Customer count × ACV"
+
+    # 2. Section header: Top-Down Approach
+    - kind: SendActivity
+      id: SendActivity_topdown_header_b4n1p3
+      activity: "### Top-Down Approach"
+
+    # 3. Question: Industry size
+    - kind: Question
+      id: Question_industrySize_c6r2j8
+      activity: "What is the total industry size (market revenue) for your sector? (in USD)"
+      inputType:
+        kind: NumberInput
+      variable: init:Topic.industrySize
+
+    # 4. Question: Reachable percentage
+    - kind: Question
+      id: Question_reachablePercent_d8s4k5
+      activity: "What percentage of that industry can you realistically reach (serviceable market %)? (0-100)"
+      inputType:
+        kind: NumberInput
+      variable: init:Topic.reachablePercent
+
+    # 5. Question: Capture rate
+    - kind: Question
+      id: Question_captureRate_e3t6m2
+      activity: "What's your realistic capture rate (obtainable market %) based on competitive position? (0-100)"
+      inputType:
+        kind: NumberInput
+      variable: init:Topic.captureRate
+
+    # 6. SearchAndSummarizeContent for industry research
+    - kind: SearchAndSummarizeContent
+      id: SearchAndSummarizeContent_industry_f5u8n1
+      query: "=concatenate(\"Search for \", Topic.sector, \" industry market size, total addressable market, and growth rates from analyst reports and market research\")"
+
+    # 7. SendActivity with Top-Down Results (Power Fx calculations)
+    - kind: SendActivity
+      id: SendActivity_topdown_results_g7v2k4
+      activity: "=concatenate(\"### Top-Down Results\\nTAM: $\", Text(Topic.industrySize), \" × 1.0 = $\", Text(Topic.industrySize), \"\\nSAM: $\", Text(Topic.industrySize), \" × \", Text(Topic.reachablePercent), \"% = $\", Text(Topic.industrySize * Topic.reachablePercent / 100), \"\\nSOM: $\", Text(Topic.industrySize), \" × \", Text(Topic.captureRate), \"% = $\", Text(Topic.industrySize * Topic.captureRate / 100), \"\\n\\n**Assumptions**: Full industry TAM, \", Text(Topic.reachablePercent), \"% addressable market, \", Text(Topic.captureRate), \"% capture rate\")"
+
+    # 8. Section header: Bottom-Up Approach
+    - kind: SendActivity
+      id: SendActivity_bottomup_header_h9w5j6
+      activity: "### Bottom-Up Approach"
+
+    # 9. Question: Target customers
+    - kind: Question
+      id: Question_targetCustomers_i1x3m8
+      activity: "How many target customers exist in your addressable market?"
+      inputType:
+        kind: NumberInput
+      variable: init:Topic.targetCustomers
+
+    # 10. Question: Average Contract Value (ACV)
+    - kind: Question
+      id: Question_acv_j4y7n2
+      activity: "What's your average contract value (ACV) in USD?"
+      inputType:
+        kind: NumberInput
+      variable: init:Topic.acv
+
+    # 11. SendActivity with Bottom-Up Results (Power Fx calculations)
+    - kind: SendActivity
+      id: SendActivity_bottomup_results_k2z5p9
+      activity: "=concatenate(\"### Bottom-Up Results\\nEstimated TAM: \", Text(Topic.targetCustomers), \" customers × $\", Text(Topic.acv), \" ACV = $\", Text(Topic.targetCustomers * Topic.acv), \"\\nSAM: \", Text(Topic.targetCustomers), \" × $\", Text(Topic.acv), \" = $\", Text(Topic.targetCustomers * Topic.acv), \"\\nSOM: Estimated at 5% of SAM in Year 1 = $\", Text(Topic.targetCustomers * Topic.acv * 0.05))"
+
+    # 12. Condition: Check variance between approaches
+    - kind: ConditionGroup
+      id: ConditionGroup_variance_l6a1m4
+      value: "=Abs((Topic.industrySize - (Topic.targetCustomers * Topic.acv)) / Topic.industrySize) > 0.3"
+      cases:
+        - value: "true"
+          actions:
+            - kind: SetVariable
+              id: SetVariable_highVariance_m8b3k7
+              variable: Topic.tamVariance
+              value: "High - Significant variance detected between approaches (>30%). Review assumptions."
+        - value: "false"
+          actions:
+            - kind: SetVariable
+              id: SetVariable_lowVariance_n3c2p5
+              variable: Topic.tamVariance
+              value: "Low - Approaches converge (±30%)"
+
+    # 13. Report variance assessment
+    - kind: SendActivity
+      id: SendActivity_variance_report_o5d4j9
+      activity: "=Topic.tamVariance"
+
+    # End dialog
+    - kind: EndDialog
+      id: EndDialog_TAM_p7e6m1

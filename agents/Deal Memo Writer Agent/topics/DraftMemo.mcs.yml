@@ -1,0 +1,43 @@
+# Name: DraftMemo
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Draft memo
+      - Create memo
+      - Write investment memo
+      - Synthesize specialist outputs
+  actions:
+    - kind: SendActivity
+      id: SendActivity_welcome
+      activity: I'll help you create a professional investment memo. Let me collect the required information.
+    - kind: Question
+      id: Question_companyName
+      prompt: What is the company name?
+      entity: StringPrebuiltEntity
+      variable: Topic.CompanyName
+    - kind: Question
+      id: Question_sector
+      prompt: What sector/industry?
+      entity: StringPrebuiltEntity
+      variable: Topic.Sector
+    - kind: Question
+      id: Question_marketOutput
+      prompt: "Please paste or share the Market Analysis Agent output (include Confidence & Evidence section):"
+      entity: StringPrebuiltEntity
+      variable: Topic.MarketAgentOutput
+    - kind: Question
+      id: Question_competitiveOutput
+      prompt: "Please paste or share the Competitive Landscape Agent output (include Confidence & Evidence section):"
+      entity: StringPrebuiltEntity
+      variable: Topic.CompetitiveAgentOutput
+    - kind: BeginDialog
+      id: BeginDialog_validate
+      dialog: ValidateInputs
+    - kind: BeginDialog
+      id: BeginDialog_sections
+      dialog: MemoSections
+    - kind: BeginDialog
+      id: BeginDialog_compile
+      dialog: CompileFinalMemo

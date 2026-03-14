@@ -1,0 +1,28 @@
+# Name: MemoSections
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - sections
+  actions:
+    - kind: SendActivity
+      id: SendActivity_generating
+      activity: Generating memo sections from your inputs...
+    - kind: BeginDialog
+      id: BeginDialog_company
+      dialog: CompanyOverviewSection
+    - kind: BeginDialog
+      id: BeginDialog_market
+      dialog: MarketAnalysisSection
+    - kind: BeginDialog
+      id: BeginDialog_competitive
+      dialog: CompetitiveLandscapeSection
+    - kind: BeginDialog
+      id: BeginDialog_risks
+      dialog: KeyRisksSection
+    - kind: BeginDialog
+      id: BeginDialog_questions
+      dialog: OpenQuestionsSection
+    - kind: EndDialog
+      id: EndDialog_sections

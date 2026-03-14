@@ -1,0 +1,8 @@
+# Name: Deal Memo Guidelines
+# Best practices for deal memo sections, confidence attribution, and evidence standards
+kind: KnowledgeSourceConfiguration
+source:
+  kind: SharePointSearchSource
+  site: https://microsoft-my.sharepoint.com/:w:/r/personal/user_microsoft_com/Documents/Memo%20Guidelines
+  additionalSearchTerms: |
+    confidence attribution guidelines; memo section standards

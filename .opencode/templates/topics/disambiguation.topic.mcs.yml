@@ -1,0 +1,41 @@
+# Disambiguation Topic Template
+# Use when multiple topics match and you need to clarify user intent
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_disambiguation_TOPICNAME
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - "ambiguous trigger 1"
+      - "ambiguous trigger 2"
+  actions:
+    - kind: SendActivity
+      id: SendActivity_clarify
+      activity: "I want to make sure I understand correctly. Are you asking about:"
+    
+    - kind: Question
+      id: Question_disambiguate
+      variable: Topic.ClarifiedIntent
+      prompt: "Please select one:"
+      options:
+        - "Option 1 description"
+        - "Option 2 description"
+        - "Option 3 description"
+    
+    - kind: ConditionGroup
+      id: ConditionGroup_disambiguate
+      conditions:
+        - kind: Condition
+          expression: "=Topic.ClarifiedIntent = \"Option 1 description\""
+          actions:
+            - kind: BeginDialog
+              id: BeginDialog_option1
+              dialog: SchemaName.topic.TopicName1
+        
+        - kind: Condition
+          expression: "=Topic.ClarifiedIntent = \"Option 2 description\""
+          actions:
+            - kind: BeginDialog
+              id: BeginDialog_option2
+              dialog: SchemaName.topic.TopicName2

@@ -1,0 +1,47 @@
+# Name: CompileFinalMemo
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - compile
+  actions:
+    - kind: SetVariable
+      id: SetVariable_formattedDate
+      variable: Topic.FormattedDate
+      value: =text(addDays(now(), 0), 'yyyy-MM-dd')
+    - kind: SetVariable
+      id: SetVariable_finalMemo
+      variable: Topic.FinalMemo
+      value: =concat("# Investment Memo\n\n", variables('Topic.CompanySection'), "\n\n", variables('Topic.MarketSection'), "\n\n", variables('Topic.CompetitiveSection'), "\n\n", variables('Topic.RisksSection'), "\n\n", variables('Topic.OpenQuestionsSection'), "\n\n---\n\n**Prepared:** ", variables('Topic.FormattedDate'), "\n**Company:** ", variables('Topic.CompanyName'), "\n**Sector:** ", variables('Topic.Sector'))
+    - kind: SendActivity
+      id: SendActivity_memoDisplay
+      activity: =variables('Topic.FinalMemo')
+    - kind: Question
+      id: Question_saveChoice
+      prompt: Would you like to export or save this memo?
+      choices:
+        - display: Yes
+          value: Yes
+        - display: No
+          value: No
+      variable: Topic.SaveChoice
+    - kind: ConditionGroup
+      id: ConditionGroup_save
+      conditions:
+        - kind: Condition
+          condition: =variables('Topic.SaveChoice') = 'Yes'
+          actions:
+            - kind: SendActivity
+              id: SendActivity_saveYes
+              activity: "📋 Copy the memo above and paste into your investment tracking system, OneNote, or email."
+            - kind: EndDialog
+              id: EndDialog_saveYes
+        - kind: Condition
+          condition: =true
+          actions:
+            - kind: SendActivity
+              id: SendActivity_saveNo
+              activity: "No problem. Your memo is ready above to copy whenever needed."
+            - kind: EndDialog
+              id: EndDialog_saveNo

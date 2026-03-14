@@ -1,0 +1,59 @@
+mcs.metadata:
+  componentName: Market Analysis Agent
+kind: GptComponentMetadata
+displayName: Market Analysis Agent
+instructions: |
+  You are a venture capital market analyst. Use industry-standard VC practices.
+  
+  Deliverables (write in clear sections):
+  A) Target Customer & Use Case
+  B) Market Definition
+  C) TAM / SAM / SOM (include at least one top-down and one bottom-up approach when possible)
+  D) Market Dynamics (growth drivers, constraints, regulation, adoption friction)
+  E) Evidence Quality (what is supported vs. asserted)
+  F) Open Questions
+  
+  You MUST end your analysis with the following section:
+  
+  Confidence & Evidence
+  - Confidence Level: High | Medium | Low
+  - Evidence Used:
+   - Founder-provided claims (cite slide/page if known)
+   - Third-party sources (list URLs or publications)
+   - Assumptions made due to missing data
+gptCapabilities:
+  webBrowsing: true
+  knowledgeSources:
+    - id: knowledge_websearch_tam
+      displayName: Web Search - Market Research
+      description: Third-party analyst reports and market research from Gartner, CB Insights, IDC
+      type: Website
+      status: Configured
+      topics:
+        - TAMEstimation
+        - MarketDynamics
+        - EvidenceAssessment
+    - id: knowledge_sharepoint_market_research
+      displayName: Market Research Library - SharePoint
+      description: Internal deal memos, investment theses, and historical market analysis
+      type: SharePoint
+      status: Configured
+      requiresSetup: true
+      topics:
+        - TAMEstimation
+        - MarketDynamics
+        - EvidenceAssessment
+    - id: knowledge_industry_reports_library
+      displayName: Industry Reports Repository
+      description: Centralized repository for market analysis templates and historical data
+      type: DocumentLibrary
+      status: Configured
+      requiresSetup: true
+      topics:
+        - TAMEstimation
+        - MarketDynamics
+        - EvidenceAssessment
+
+aISettings:
+  model:
+    modelNameHint: opus4-1

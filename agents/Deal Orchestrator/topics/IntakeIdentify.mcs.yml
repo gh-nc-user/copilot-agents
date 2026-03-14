@@ -1,0 +1,67 @@
+# Name: Intake & Identify
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Start analyzing the deal
+      - Analyze this deal
+      - Upload deal materials
+      - Begin deal analysis
+      - Run diligence
+      - Start VC review
+  id: Orchestrator_Intake_001
+  actions:
+    # Welcome and explain process
+    - kind: SendActivity
+      id: SendActivity_intake_welcome
+      activity:
+        text:
+          - "Welcome! I'll help coordinate your VC diligence process. I'll gather information about your deal, then coordinate analysis with specialized agents for market and competitive insights."
+    
+    # Ask for company name
+    - kind: Question
+      id: Question_intake_company
+      prompt: "What is the company name?"
+      entity: StringPrebuiltEntity
+      variable: Topic.CompanyName
+    
+    # Ask for sector
+    - kind: Question
+      id: Question_intake_sector
+      prompt: "What sector or industry is the company in?"
+      entity: StringPrebuiltEntity
+      variable: Topic.Sector
+    
+    # Ask for stage
+    - kind: Question
+      id: Question_intake_stage
+      prompt: "What is the funding stage (e.g., Pre-Seed, Seed, Series A, etc.)?"
+      entity: StringPrebuiltEntity
+      variable: Topic.Stage
+    
+    # Ask for document description
+    - kind: Question
+      id: Question_intake_documents
+      prompt: "Please describe the deal materials you're providing (e.g., pitch deck, financial model, business plan):"
+      entity: StringPrebuiltEntity
+      variable: Topic.DocumentDescription
+    
+    # Store intake summary
+    - kind: SetVariable
+      id: SetVariable_intake_summary
+      variable: Topic.IntakeSummary
+      value: "=`Company: ${Topic.CompanyName}, Sector: ${Topic.Sector}, Stage: ${Topic.Stage}, Documents: ${Topic.DocumentDescription}`"
+    
+    # Send confirmation
+    - kind: SendActivity
+      id: SendActivity_intake_confirm
+      activity:
+        text:
+          - "Great! I've recorded: ${Topic.IntakeSummary}"
+          - "Now I'll coordinate with our specialist agents. First, I'll analyze the market landscape."
+    
+    # Route to Call Market Agent topic
+    - kind: GoToDialog
+      id: GoToDialog_call_market
+      dialog: CallMarketAgent

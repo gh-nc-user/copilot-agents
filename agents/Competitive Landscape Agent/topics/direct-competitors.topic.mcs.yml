@@ -1,0 +1,100 @@
+# Topic: Direct Competitors
+# Purpose: Identify direct competitors (same buyer, same job-to-be-done)
+# Trigger: OnRecognizedIntent
+# GenerativeActionsEnabled: true - uses AutomaticTaskInput and SearchAndSummarizeContent
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_DirectCompetitors_dc001
+inputType:
+  properties:
+    companyDescription:
+      displayName: companyDescription
+      description: "Describe your solution briefly"
+      type: String
+    useCase:
+      displayName: useCase
+      description: "What problem does it solve?"
+      type: String
+
+outputType:
+  properties:
+    directCompetitors:
+      displayName: directCompetitors
+      description: "List of direct competitors with sources (Deliverable A)"
+      type: String
+    competitorSources:
+      displayName: competitorSources
+      description: "Source citations"
+      type: String
+
+inputs:
+  - kind: AutomaticTaskInput
+    id: dc-input-001
+    propertyName: companyDescription
+    description: "Describe your solution briefly"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: dc-input-002
+    propertyName: useCase
+    description: "What problem does it solve?"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+beginDialog:
+  kind: OnRecognizedIntent
+  id: OnRecognizedIntent_dc_trigger
+  intent:
+    triggerQueries:
+      - "Identify direct competitors"
+      - "Direct competitors only"
+      - "Same buyer same job"
+      - "Who competes directly with us"
+    triggerQueriesCondensed:
+      - "identify direct competitors"
+      - "direct competitors"
+      - "same buyer job"
+      - "direct competition"
+
+  actions:
+    - kind: SendActivity
+      id: dc-sendactivity-001
+      activity: "🔍 Searching for direct competitors (same buyer, same job-to-be-done)...\n\nAnalyzing: {Topic.companyDescription}\nProblem Solved: {Topic.useCase}"
+
+    - kind: SearchAndSummarizeContent
+      id: dc-searchandsummarize-001
+      query: "Direct competitors for {Topic.companyDescription} solving {Topic.useCase}. Identify companies targeting the same buyer with the same job-to-be-done. Include company names, solutions, and positioning. Sources: Crunchbase, G2, founder materials, market research, industry reports"
+      outputs:
+        - kind: Variable
+          id: dc-variable-001
+          variable: Topic.CompetitorsFound
+
+    - kind: SendActivity
+      id: dc-sendactivity-002
+      activity: "**Direct Competitors Identified:**\n\n{Topic.CompetitorsFound}\n\n_Sources: Crunchbase, G2, founder materials, market research_"
+
+    - kind: ConditionGroup
+      id: dc-condition-001
+      conditions:
+        - kind: Condition
+          expression: "!IsBlank(Topic.CompetitorsFound)"
+          actions:
+            - kind: SendActivity
+              id: dc-sendactivity-003
+              activity: "✓ Direct competitors identified from trusted market sources."
+
+            - kind: Question
+              id: dc-question-001
+              variable: Topic.MissedCompetitors
+              prompt: "Are there any direct competitors we missed?"
+              options:
+                - "No, that's comprehensive"
+                - "Yes, add more"
+
+        - kind: Condition
+          expression: "IsBlank(Topic.CompetitorsFound)"
+          actions:
+            - kind: SendActivity
+              id: dc-sendactivity-004
+              activity: "⚠️ Limited direct competitors found in available sources. This may indicate a newly emerging category or highly differentiated positioning."

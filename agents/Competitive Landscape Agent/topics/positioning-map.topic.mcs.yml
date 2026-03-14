@@ -1,0 +1,105 @@
+# Topic: Positioning Map
+# Purpose: Map competitor positioning across key dimensions
+# Trigger: OnRecognizedIntent
+# GenerativeActionsEnabled: true - uses AutomaticTaskInput and SearchAndSummarizeContent
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_PositioningMap_pm001
+inputType:
+  properties:
+    companyPricing:
+      displayName: companyPricing
+      description: "What is your pricing model? (e.g., per-user, per-transaction, fixed)"
+      type: String
+    deploymentModel:
+      displayName: deploymentModel
+      description: "How is your solution deployed? (e.g., SaaS, on-prem, hybrid)"
+      type: String
+    targetSegment:
+      displayName: targetSegment
+      description: "What customer segment do you target?"
+      type: String
+    gTMChannel:
+      displayName: gTMChannel
+      description: "What is your primary GTM channel? (e.g., direct sales, self-serve, marketplace)"
+      type: String
+
+outputType:
+  properties:
+    positioningMap:
+      displayName: positioningMap
+      description: "Positioning table with competitors (Deliverable C)"
+      type: String
+    gaps:
+      displayName: gaps
+      description: "Identified positioning gaps and market opportunities"
+      type: String
+
+inputs:
+  - kind: AutomaticTaskInput
+    id: pm-input-001
+    propertyName: companyPricing
+    description: "What is your pricing model? (e.g., per-user, per-transaction, fixed)"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: pm-input-002
+    propertyName: deploymentModel
+    description: "How is your solution deployed? (e.g., SaaS, on-prem, hybrid)"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: pm-input-003
+    propertyName: targetSegment
+    description: "What customer segment do you target?"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: pm-input-004
+    propertyName: gTMChannel
+    description: "What is your primary GTM channel? (e.g., direct sales, self-serve, marketplace)"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+beginDialog:
+  kind: OnRecognizedIntent
+  id: OnRecognizedIntent_pm_trigger
+  intent:
+    triggerQueries:
+      - "Map positioning"
+      - "Positioning dimensions"
+      - "Where are we positioned"
+      - "Competitive positioning analysis"
+    triggerQueriesCondensed:
+      - "map positioning"
+      - "positioning dimensions"
+      - "where positioned"
+      - "competitive positioning"
+
+  actions:
+    - kind: SendActivity
+      id: pm-sendactivity-001
+      activity: "📍 Mapping positioning dimensions: **Price** | **Deployment** | **Segment** | **GTM**\n\nYour Position:\n• Pricing: {Topic.companyPricing}\n• Deployment: {Topic.deploymentModel}\n• Target Segment: {Topic.targetSegment}\n• GTM Channel: {Topic.gTMChannel}"
+
+    - kind: SearchAndSummarizeContent
+      id: pm-searchandsummarize-001
+      query: "Competitor positioning in {Topic.targetSegment} market. Include pricing models, deployment options (SaaS, on-prem, hybrid), customer segments, and GTM channels (direct sales, self-serve, marketplace). Create positioning comparison table. Sources: G2, Gartner, vendor materials, market research"
+      outputs:
+        - kind: Variable
+          id: pm-variable-001
+          variable: Topic.PositioningComparison
+
+    - kind: SendActivity
+      id: pm-sendactivity-002
+      activity: "**Positioning Landscape:**\n\n{Topic.PositioningComparison}\n\n_Sources: G2, Gartner, vendor materials_"
+
+    - kind: SendActivity
+      id: pm-sendactivity-003
+      activity: "🎯 **Identified Positioning Gaps** (less crowded areas in market):\n• Underserved customer segments\n• Unique deployment models\n• Differentiated pricing strategies\n• Alternative GTM channels\n\nThese represent potential competitive advantages or blue ocean opportunities."
+
+    - kind: SendActivity
+      id: pm-sendactivity-004
+      activity: "🔴 **Crowded Positioning Areas** (many competitors):\n• These dimensions represent intense competition\n• Differentiation harder on crowded dimensions\n• Consider alternatives or unique combinations"

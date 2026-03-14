@@ -1,0 +1,22 @@
+# Name: KeyRisksSection
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - risks
+  actions:
+    - kind: Question
+      id: Question_userRisks
+      prompt: "What key risks should be highlighted? (market risks, execution risks, competitive risks, etc.)"
+      entity: StringPrebuiltEntity
+      variable: Topic.UserProvidedRisks
+    - kind: SetVariable
+      id: SetVariable_risksSection
+      variable: Topic.RisksSection
+      value: =concat("## Key Risks\n\n### Market Risks (per specialist)\n", if(contains(toLower(variables('Topic.MarketAgentOutput')), 'risk'), "See market analysis above", "No specific market risks identified"), "\n\n### Competitive Risks (per specialist)\n", if(contains(toLower(variables('Topic.CompetitiveAgentOutput')), 'risk'), "See competitive landscape above", "No specific competitive risks identified"), "\n\n### Additional Risks\n", variables('Topic.UserProvidedRisks'))
+    - kind: SendActivity
+      id: SendActivity_risksDisplay
+      activity: =variables('Topic.RisksSection')
+    - kind: EndDialog
+      id: EndDialog_risks

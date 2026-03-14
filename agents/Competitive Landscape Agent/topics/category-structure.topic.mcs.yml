@@ -1,0 +1,142 @@
+# Topic: Category Structure
+# Purpose: Assess market concentration, fragmentation, and structural dynamics
+# Trigger: OnRecognizedIntent
+# GenerativeActionsEnabled: true - uses AutomaticTaskInput and SearchAndSummarizeContent
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_CategoryStructure_cs001
+inputType:
+  properties:
+    switchingCosts:
+      displayName: switchingCosts
+      description: "What are switching costs for customers? (data, integrations, retraining, etc.)"
+      type: String
+    barriersToEntry:
+      displayName: barriersToEntry
+      description: "What are barriers to entry? (regulatory, network effects, data, scale)"
+      type: String
+
+outputType:
+  properties:
+    categoryStructure:
+      displayName: categoryStructure
+      description: "Market fragmentation, switching costs, barriers (Deliverable E)"
+      type: String
+    marketDynamics:
+      displayName: marketDynamics
+      description: "Winner-take-most vs fragmented market assessment"
+      type: String
+
+inputs:
+  - kind: AutomaticTaskInput
+    id: cs-input-001
+    propertyName: switchingCosts
+    description: "What are switching costs for customers? (data, integrations, retraining, etc.)"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: cs-input-002
+    propertyName: barriersToEntry
+    description: "What are barriers to entry? (regulatory, network effects, data, scale)"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+beginDialog:
+  kind: OnRecognizedIntent
+  id: OnRecognizedIntent_cs_trigger
+  intent:
+    triggerQueries:
+      - "Assess category structure"
+      - "Market fragmentation"
+      - "Winner-take-most"
+      - "Market consolidation trends"
+    triggerQueriesCondensed:
+      - "assess category structure"
+      - "market fragmentation"
+      - "winner take most"
+      - "consolidation trends"
+
+  actions:
+    - kind: SendActivity
+      id: cs-sendactivity-001
+      activity: "📊 Analyzing category structure and market dynamics..."
+
+    - kind: SendActivity
+      id: cs-sendactivity-002
+      activity: "**Structural Factors:**\n\n🔐 Switching Costs:\n{Topic.switchingCosts}\n\n🧱 Barriers to Entry:\n{Topic.barriersToEntry}"
+
+    - kind: SearchAndSummarizeContent
+      id: cs-searchandsummarize-001
+      query: "Market structure and consolidation trends for {Topic.switchingCosts} solutions. Assess market concentration, fragmentation, switching costs impact, and barriers to entry. Identify market leaders and consolidation patterns. Are there winner-take-most dynamics? Sources: Gartner Magic Quadrant, CB Insights, industry consolidation reports, market research"
+      outputs:
+        - kind: Variable
+          id: cs-variable-001
+          variable: Topic.MarketConcentration
+
+    - kind: SendActivity
+      id: cs-sendactivity-003
+      activity: "**Market Structure Analysis:**\n\n{Topic.MarketConcentration}\n\n_Sources: Gartner, CB Insights, industry consolidation analysis_"
+
+    - kind: Question
+      id: cs-question-001
+      variable: Topic.ConcentrationLevel
+      prompt: "Based on market research, what's the market concentration level?"
+      options:
+        - "Winner-Take-Most (consolidating to leader)"
+        - "Consolidating (few to several leaders)"
+        - "Fragmented (many viable players)"
+
+    - kind: ConditionGroup
+      id: cs-condition-001
+      conditions:
+        - kind: Condition
+          expression: "=Topic.ConcentrationLevel = \"Winner-Take-Most (consolidating to leader)\""
+          actions:
+            - kind: SendActivity
+              id: cs-sendactivity-004
+              activity: "🏆 **MARKET STRUCTURE: WINNER-TAKE-MOST**\n\nThe market is consolidating toward one or few dominant leaders. Characteristics:\n• High switching costs lock in customers\n• Strong barriers to entry protect leaders\n• Network effects or scale advantages\n• Difficult for new entrants to compete"
+
+            - kind: SendActivity
+              id: cs-sendactivity-005
+              activity: "📈 **STRATEGIC IMPLICATIONS:**\n\n**If you're the leader:** Defend moat, expand network, raise switching costs\n**If you're a challenger:** Differentiate radically or focus niche\n**If you're new:** Look for adjacent markets or paradigm shifts"
+
+        - kind: Condition
+          expression: "=Topic.ConcentrationLevel = \"Consolidating (few to several leaders)\""
+          actions:
+            - kind: SendActivity
+              id: cs-sendactivity-006
+              activity: "📉 **MARKET STRUCTURE: CONSOLIDATING**\n\nThe market is maturing with several established leaders. Characteristics:\n• Moderate to high switching costs\n• Meaningful barriers to entry\n• Room for 3-5 major competitors\n• Smaller players face consolidation pressure"
+
+            - kind: SendActivity
+              id: cs-sendactivity-007
+              activity: "📈 **STRATEGIC IMPLICATIONS:**\n\n**For established players:** Acquire/merge to reach critical mass\n**For challengers:** Win on differentiation or segment dominance\n**For new entrants:** Focus on emerging segments or disruption"
+
+        - kind: Condition
+          expression: "=Topic.ConcentrationLevel = \"Fragmented (many viable players)\""
+          actions:
+            - kind: SendActivity
+              id: cs-sendactivity-008
+              activity: "🌐 **MARKET STRUCTURE: FRAGMENTED**\n\nThe market supports many viable competitors. Characteristics:\n• Low switching costs enable customer switching\n• Low barriers to entry allow new competitors\n• Geographic or vertical fragmentation\n• No single dominant leader"
+
+            - kind: SendActivity
+              id: cs-sendactivity-009
+              activity: "📈 **STRATEGIC IMPLICATIONS:**\n\n**For all players:** Focus on customer satisfaction and retention\n**Build switching costs:** Integrations, data lock-in, community\n**Vertical opportunities:** Own niches, go deep\n**Consolidation plays:** Roll-up strategy for fragmented markets"
+
+    - kind: Question
+      id: cs-question-002
+      variable: Topic.MissingData
+      prompt: "Are there critical category structure data points missing?"
+      options:
+        - "No, comprehensive analysis"
+        - "Yes, need more research"
+
+    - kind: ConditionGroup
+      id: cs-condition-002
+      conditions:
+        - kind: Condition
+          expression: "=Topic.MissingData = \"Yes, need more research\""
+          actions:
+            - kind: SendActivity
+              id: cs-sendactivity-010
+              activity: "Note: Some structural factors may require deeper research (M&A activity, private fundraising, market size projections). Consider supplementing with analyst reports or primary research."

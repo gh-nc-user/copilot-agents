@@ -1,0 +1,123 @@
+# Topic: Map Competitors (ROOT/MAIN TOPIC)
+# Purpose: Orchestrate the full competitive landscape analysis
+# Trigger: OnRecognizedIntent
+# GenerativeActionsEnabled: true - uses AutomaticTaskInput and SearchAndSummarizeContent
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_MapCompetitors_mc001
+inputType:
+  properties:
+    companyName:
+      displayName: companyName
+      description: "What is your company name?"
+      type: String
+    productCategory:
+      displayName: productCategory
+      description: "What product category or solution does your company focus on?"
+      type: String
+    targetCustomer:
+      displayName: targetCustomer
+      description: "Who is your target customer or end user?"
+      type: String
+
+outputType:
+  properties:
+    competitiveAnalysis:
+      displayName: competitiveAnalysis
+      description: "Full competitive landscape analysis with deliverables and confidence scores"
+      type: String
+    confidenceLevel:
+      displayName: confidenceLevel
+      description: "High/Medium/Low based on research depth"
+      type: String
+
+inputs:
+  - kind: AutomaticTaskInput
+    id: mc-input-001
+    propertyName: companyName
+    description: "What is your company name?"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: mc-input-002
+    propertyName: productCategory
+    description: "What product category or solution does your company focus on?"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+  - kind: AutomaticTaskInput
+    id: mc-input-003
+    propertyName: targetCustomer
+    description: "Who is your target customer or end user?"
+    entity: StringPrebuiltEntity
+    shouldPromptUser: true
+
+beginDialog:
+  kind: OnRecognizedIntent
+  id: OnRecognizedIntent_mc_trigger
+  intent:
+    triggerQueries:
+      - "Map competitors"
+      - "Competitive analysis"
+      - "Who are the competitors"
+      - "Analyze my competitive landscape"
+    triggerQueriesCondensed:
+      - "map competitors"
+      - "competitive analysis"
+      - "who are competitors"
+      - "analyze landscape"
+
+  actions:
+    - kind: Question
+      id: mc-question-001
+      variable: Topic.AnalysisConfirm
+      prompt: "Ready to analyze your competitive landscape with {Topic.companyName} in {Topic.productCategory} targeting {Topic.targetCustomer}?"
+      options:
+        - "Yes, analyze now"
+        - "Let me reconsider"
+
+    - kind: ConditionGroup
+      id: mc-condition-001
+      conditions:
+        - kind: Condition
+          expression: "=Topic.AnalysisConfirm = \"Yes, analyze now\""
+          actions:
+            - kind: BeginDialog
+              id: mc-begindialog-001
+              dialog: direct-competitors
+              resultVariable: Topic.DirectCompetitorsResult
+
+            - kind: BeginDialog
+              id: mc-begindialog-002
+              dialog: positioning-map
+              resultVariable: Topic.PositioningMapResult
+
+            - kind: BeginDialog
+              id: mc-begindialog-003
+              dialog: differentiation-claims
+              resultVariable: Topic.DifferentiationResult
+
+            - kind: BeginDialog
+              id: mc-begindialog-004
+              dialog: category-structure
+              resultVariable: Topic.CategoryStructureResult
+
+            - kind: SendActivity
+              id: mc-sendactivity-001
+              activity: "Compiling your complete competitive landscape analysis from all sources..."
+
+            - kind: SendActivity
+              id: mc-sendactivity-002
+              activity: "📊 **COMPETITIVE LANDSCAPE ANALYSIS**\n\n**Company:** {Topic.companyName}\n**Category:** {Topic.productCategory}\n**Target Customer:** {Topic.targetCustomer}\n\n**Deliverables Generated:**\n✓ A) Direct Competitors\n✓ C) Positioning Map\n✓ D) Differentiation Assessment\n✓ E) Category Structure\n\n_Sources: G2, Crunchbase, Gartner, CB Insights, vendor materials_"
+
+            - kind: SendActivity
+              id: mc-sendactivity-003
+              activity: "Your confidence and evidence report will follow with detailed source citations and verification status."
+
+        - kind: Condition
+          expression: "=Topic.AnalysisConfirm = \"Let me reconsider\""
+          actions:
+            - kind: SendActivity
+              id: mc-sendactivity-004
+              activity: "No problem. Feel free to restart when you're ready to analyze your competitive landscape."

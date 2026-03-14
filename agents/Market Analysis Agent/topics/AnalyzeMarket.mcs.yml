@@ -1,0 +1,102 @@
+# Name: AnalyzeMarket
+# Main topic for market analysis workflow
+kind: AdaptiveDialog
+id: AdaptiveDialog_AnalyzeMarket
+topicId: AnalyzeMarket
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - "Analyze market"
+      - "Estimate market size"
+      - "Market analysis"
+    triggerQueriesCondensed:
+      - "analyze market"
+      - "market analysis"
+    modelDescription: "Analyze market size, dynamics, and evidence quality"
+  actions:
+    # 1. Welcome message with 6 deliverables overview
+    - kind: SendActivity
+      id: SendActivity_welcome_kp8x1m
+      activity: "Welcome! Let me help you analyze this market. I'll provide 6 deliverables: (A) Market Size, (B) Top-Down TAM/SAM/SOM, (C) Bottom-Up TAM/SAM/SOM, (D) Market Dynamics, (E) Evidence Assessment, and (F) Confidence & Evidence Rating."
+
+    # 2. Question: Company/Product name
+    - kind: Question
+      id: Question_companyName_a2d4f9
+      activity: "What company or product are we analyzing?"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.companyName
+
+    # 3. Question: Sector/Industry
+    - kind: Question
+      id: Question_sector_b5k7m2
+      activity: "What sector or industry?"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.sector
+
+    # 4. Question: Stage (early/growth/mature)
+    - kind: Question
+      id: Question_stage_c9n3p6
+      activity: "What stage (early/growth/mature)?"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.stage
+
+    # 5. Question: Market data provided?
+    - kind: Question
+      id: Question_marketData_d7r1q4
+      activity: "Do you have any market data or documents to share?"
+      inputType:
+        kind: BooleanInput
+      variable: init:Topic.marketDataProvided
+
+    # 6. Transition message
+    - kind: SendActivity
+      id: SendActivity_transition1_e5s2j8
+      activity: "Great! Now I'll start with market size estimation..."
+
+    # 7. BeginDialog: Navigate to TAMEstimation
+    - kind: BeginDialog
+      id: BeginDialog_TAM_f4t6k3
+      dialog: AdaptiveDialog_TAMEstimation
+
+    # 8. Transition to market dynamics
+    - kind: SendActivity
+      id: SendActivity_transition2_g8v1n5
+      activity: "Now let's analyze market dynamics..."
+
+    # 9. BeginDialog: Navigate to MarketDynamics
+    - kind: BeginDialog
+      id: BeginDialog_Dynamics_h2w9p7
+      dialog: AdaptiveDialog_MarketDynamics
+
+    # 10. Transition to evidence assessment
+    - kind: SendActivity
+      id: SendActivity_transition3_i6x4m1
+      activity: "Let me assess evidence quality..."
+
+    # 11. BeginDialog: Navigate to EvidenceAssessment
+    - kind: BeginDialog
+      id: BeginDialog_Evidence_j3z5k9
+      dialog: AdaptiveDialog_EvidenceAssessment
+
+    # 12. Compile summary with Power Fx
+    - kind: SendActivity
+      id: SendActivity_summary_k1a8l4
+      activity: "=concatenate(\"## MARKET ANALYSIS SUMMARY FOR \", Topic.companyName, \"\n\nStage: \", Topic.stage, \" | Sector: \", Topic.sector, \"\n\nAll components analyzed. Proceeding to confidence assessment...\")"
+
+    # 13. BeginDialog: Navigate to ConfidenceEvidence
+    - kind: BeginDialog
+      id: BeginDialog_Confidence_l7b2m6
+      dialog: AdaptiveDialog_ConfidenceEvidence
+
+    # 14. Final completion message
+    - kind: SendActivity
+      id: SendActivity_complete_m5d3n9
+      activity: "Analysis complete! All deliverables (A-F) compiled with confidence ratings."
+
+    # End dialog
+    - kind: EndDialog
+      id: EndDialog_main_n9c1p2

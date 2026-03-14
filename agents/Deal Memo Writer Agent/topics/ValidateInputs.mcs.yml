@@ -1,0 +1,39 @@
+# Name: ValidateInputs
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - validate
+  actions:
+    - kind: SetVariable
+      id: SetVariable_marketValid
+      variable: Topic.MarketValid
+      value: =if(and(contains(toLower(variables('Topic.MarketAgentOutput')), 'confidence'), contains(toLower(variables('Topic.MarketAgentOutput')), 'evidence')), true, false)
+    - kind: SetVariable
+      id: SetVariable_competitiveValid
+      variable: Topic.CompetitiveValid
+      value: =if(and(contains(toLower(variables('Topic.CompetitiveAgentOutput')), 'confidence'), contains(toLower(variables('Topic.CompetitiveAgentOutput')), 'evidence')), true, false)
+    - kind: ConditionGroup
+      id: ConditionGroup_validation
+      conditions:
+        - kind: Condition
+          condition: =and(variables('Topic.MarketValid'), variables('Topic.CompetitiveValid'))
+          actions:
+            - kind: SetVariable
+              id: SetVariable_inputsValid
+              variable: Topic.InputsValid
+              value: =true
+            - kind: SendActivity
+              id: SendActivity_validationPassed
+              activity: "✅ Validation passed. Your specialist outputs contain the required sections."
+            - kind: EndDialog
+              id: EndDialog_success
+        - kind: Condition
+          condition: =true
+          actions:
+            - kind: SendActivity
+              id: SendActivity_validationFailed
+              activity: "⚠️ Missing required sections. Both outputs must include 'Confidence & Evidence' sections. Please re-run the specialist agents with complete output."
+            - kind: EndDialog
+              id: EndDialog_failure

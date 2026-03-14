@@ -1,0 +1,73 @@
+# Name: Call Market Agent
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Call Market Analysis Agent
+  id: Orchestrator_CallMarket_001
+  actions:
+    # Prepare to call Market Analysis Agent
+    - kind: SendActivity
+      id: SendActivity_market_calling
+      activity:
+        text:
+          - "Now invoking Market Analysis Agent with context: ${Topic.CompanyName}, ${Topic.Sector}, ${Topic.Stage}"
+    
+    # Call the Market Analysis Agent with BeginDialog
+    - kind: BeginDialog
+      id: BeginDialog_market_agent
+      dialog: Market Analysis Agent
+      input:
+        variables:
+          - CompanyName: Topic.CompanyName
+          - Sector: Topic.Sector
+          - Stage: Topic.Stage
+          - DocumentDescription: Topic.DocumentDescription
+      resultVariable: Topic.MarketAgentResult
+    
+    # Store the market output
+    - kind: SetVariable
+      id: SetVariable_market_output
+      variable: Topic.MarketAgentFindings
+      value: "=Topic.MarketAgentResult"
+    
+    # Extract confidence level from result (if available)
+    - kind: SetVariable
+      id: SetVariable_market_confidence
+      variable: Topic.MarketConfidenceLevel
+      value: "=if(!IsBlank(Topic.MarketAgentResult), 'Complete', 'Incomplete')"
+    
+    # Check if output contains required Confidence & Evidence section
+    - kind: ConditionGroup
+      id: ConditionGroup_market_has_confidence_section
+      condition: "=!IsBlank(Topic.MarketAgentFindings) && (Find(Topic.MarketAgentFindings, \"Confidence & Evidence\") > 0 || Find(Topic.MarketAgentFindings, \"Confidence Level\") > 0)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_market_confidence_found
+          variable: Topic.MarketHasConfidenceSection
+          value: "=true"
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_market_confidence_not_found
+          variable: Topic.MarketHasConfidenceSection
+          value: "=false"
+        - kind: SendActivity
+          id: SendActivity_market_missing_confidence_section
+          activity:
+            text:
+              - "⚠️ Market Analysis output is missing Confidence & Evidence section."
+              - "Requesting additional structure from Market Analysis Agent..."
+    
+    # Send confirmation
+    - kind: SendActivity
+      id: SendActivity_market_complete
+      activity:
+        text:
+          - "✓ Market Analysis Agent completed."
+          - "Now I'll invoke the Competitive Landscape Agent..."
+    
+    # Route to Call Competitive Agent
+    - kind: GoToDialog
+      id: GoToDialog_call_competitive
+      dialog: CallCompetitiveAgent

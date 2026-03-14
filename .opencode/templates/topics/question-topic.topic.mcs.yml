@@ -1,0 +1,48 @@
+# Question Topic Template
+# Use for topics that ask questions and branch based on answers
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_question_TOPICNAME
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - "trigger phrase 1"
+      - "trigger phrase 2"
+      - "trigger phrase 3"
+    triggerQueriesCondensed:
+      - "condensed phrase 1"
+      - "condensed phrase 2"
+  actions:
+    - kind: Question
+      id: Question_main
+      variable: Topic.UserChoice
+      prompt: "What would you like to do?"
+      options:
+        - "Option A"
+        - "Option B"
+        - "Option C"
+    
+    - kind: ConditionGroup
+      id: ConditionGroup_branches
+      conditions:
+        - kind: Condition
+          expression: "=Topic.UserChoice = \"Option A\""
+          actions:
+            - kind: SendActivity
+              id: SendActivity_optionA
+              activity: "You chose Option A."
+        
+        - kind: Condition
+          expression: "=Topic.UserChoice = \"Option B\""
+          actions:
+            - kind: SendActivity
+              id: SendActivity_optionB
+              activity: "You chose Option B."
+        
+        - kind: Condition
+          expression: "=Topic.UserChoice = \"Option C\""
+          actions:
+            - kind: SendActivity
+              id: SendActivity_optionC
+              activity: "You chose Option C."

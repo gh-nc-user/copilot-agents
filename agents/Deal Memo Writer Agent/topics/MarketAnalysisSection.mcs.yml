@@ -1,0 +1,20 @@
+# Name: MarketAnalysisSection
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - market
+  actions:
+    - kind: SendActivity
+      id: SendActivity_market_processing
+      activity: Processing Market Analysis from specialist output...
+    - kind: SetVariable
+      id: SetVariable_marketSection
+      variable: Topic.MarketSection
+      value: =concat("## Market Analysis\n\n*(per Market Analysis Agent)*\n\n", variables('Topic.MarketAgentOutput'))
+    - kind: SendActivity
+      id: SendActivity_marketDisplay
+      activity: =variables('Topic.MarketSection')
+    - kind: EndDialog
+      id: EndDialog_market

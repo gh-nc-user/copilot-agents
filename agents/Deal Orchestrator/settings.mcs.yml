@@ -1,0 +1,26 @@
+﻿displayName: Deal Orchestrator (PM)
+schemaName: copilots_header_67a52
+accessControlPolicy: GroupMembership
+authenticationMode: Integrated
+authenticationTrigger: Always
+configuration:
+  settings:
+    GenerativeActionsEnabled: true
+
+  isAgentConnectable: true
+  gPTSettings:
+    defaultSchemaName: copilots_header_67a52.gpt.default
+
+  aISettings:
+    useModelKnowledge: true
+    isFileAnalysisEnabled: true
+    isSemanticSearchEnabled: true
+    optInUseLatestModels: false
+    OneDriveAndSharePoint: true
+
+  recognizer:
+    kind: GenerativeAIRecognizer
+
+publishedOn: 2026-03-13T18:20:41.0000000Z
+template: default-2.1.0
+language: 1033

@@ -1,0 +1,52 @@
+kind: KnowledgeSourceConfiguration
+id: knowledge_industry_reports_library
+displayName: Industry Reports Repository
+description: |
+  Centralized document library for market analysis templates, historical market
+  data, sector benchmarks, and industry report archives. Serves as the single
+  source of truth for market sizing methodologies and historical TAM estimates.
+source:
+  kind: Document
+  libraryPath: "Industry Reports Repository"
+  folderPatterns:
+    - "sector-reports/*"
+    - "market-analysis-templates/*"
+    - "tam-methodologies/*"
+    - "historical-data/*"
+    - "benchmark-reports/*"
+metadata:
+  contentTypes:
+    - "PDF"
+    - "CSV"
+    - "Excel Workbooks"
+    - "YAML Templates"
+  folders:
+    - name: "sector-reports"
+      description: "Comprehensive sector analysis reports"
+    - name: "market-analysis-templates"
+      description: "Reusable market analysis templates and frameworks"
+    - name: "tam-methodologies"
+      description: "TAM estimation methodologies and best practices"
+    - name: "historical-data"
+      description: "Historical market size data and growth rates"
+    - name: "benchmark-reports"
+      description: "Industry benchmarks and competitive data"
+  updateFrequency: "Quarterly"
+  reliability: "High - Curated internal and external sources"
+configuration:
+  enableFullTextSearch: true
+  indexingStrategy: "Deep indexing with semantic search"
+  refreshInterval: "Monthly"
+  searchableMetadata:
+    - "sector"
+    - "vertical"
+    - "year"
+    - "tam_range"
+    - "growth_rate"
+    - "report_type"
+    - "methodology"
+  tags:
+    - "tam-estimation"
+    - "market-dynamics"
+    - "competitive-analysis"
+    - "evidence-assessment"

@@ -1,0 +1,11 @@
+# Greeting Topic Template
+# Use for OnConversationStart - welcomes users when they start a conversation
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_greeting
+beginDialog:
+  kind: OnConversationStart
+  actions:
+    - kind: SendActivity
+      id: SendActivity_greeting
+      activity: "Hello! Welcome to {AgentName}. How can I help you today?"

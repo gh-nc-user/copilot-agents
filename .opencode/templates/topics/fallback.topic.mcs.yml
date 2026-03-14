@@ -1,0 +1,19 @@
+# Fallback Topic Template
+# Use for OnUnknownIntent - handles unrecognized user input
+
+kind: AdaptiveDialog
+id: AdaptiveDialog_fallback
+beginDialog:
+  kind: OnUnknownIntent
+  actions:
+    - kind: SendActivity
+      id: SendActivity_fallback
+      activity: "I'm sorry, I didn't understand that. Could you please rephrase your question?"
+    - kind: Question
+      id: Question_fallback
+      variable: Topic.FallbackChoice
+      prompt: "What would you like to do?"
+      options:
+        - "Try again"
+        - "Speak to a human"
+        - "Get help"

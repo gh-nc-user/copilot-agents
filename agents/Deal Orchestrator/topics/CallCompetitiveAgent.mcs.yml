@@ -1,0 +1,73 @@
+# Name: Call Competitive Agent
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Call Competitive Landscape Agent
+  id: Orchestrator_CallCompetitive_001
+  actions:
+    # Prepare to call Competitive Agent
+    - kind: SendActivity
+      id: SendActivity_competitive_calling
+      activity:
+        text:
+          - "Now invoking Competitive Landscape Agent with context: ${Topic.CompanyName}, ${Topic.Sector}"
+    
+    # Call the Competitive Landscape Agent with BeginDialog
+    - kind: BeginDialog
+      id: BeginDialog_competitive_agent
+      dialog: Competitive Landscape Agent
+      input:
+        variables:
+          - CompanyName: Topic.CompanyName
+          - Sector: Topic.Sector
+          - Stage: Topic.Stage
+          - DocumentDescription: Topic.DocumentDescription
+      resultVariable: Topic.CompetitiveAgentResult
+    
+    # Store the competitive output
+    - kind: SetVariable
+      id: SetVariable_competitive_output
+      variable: Topic.CompetitiveAgentFindings
+      value: "=Topic.CompetitiveAgentResult"
+    
+    # Extract confidence level (if available)
+    - kind: SetVariable
+      id: SetVariable_competitive_confidence
+      variable: Topic.CompetitiveConfidenceLevel
+      value: "=if(!IsBlank(Topic.CompetitiveAgentResult), 'Complete', 'Incomplete')"
+    
+    # Check if output contains required Confidence & Evidence section
+    - kind: ConditionGroup
+      id: ConditionGroup_competitive_has_confidence_section
+      condition: "=!IsBlank(Topic.CompetitiveAgentFindings) && (Find(Topic.CompetitiveAgentFindings, \"Confidence & Evidence\") > 0 || Find(Topic.CompetitiveAgentFindings, \"Confidence Level\") > 0)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_competitive_confidence_found
+          variable: Topic.CompetitiveHasConfidenceSection
+          value: "=true"
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_competitive_confidence_not_found
+          variable: Topic.CompetitiveHasConfidenceSection
+          value: "=false"
+        - kind: SendActivity
+          id: SendActivity_competitive_missing_confidence_section
+          activity:
+            text:
+              - "⚠️ Competitive Analysis output is missing Confidence & Evidence section."
+              - "This will be noted in the final memo."
+    
+    # Send confirmation
+    - kind: SendActivity
+      id: SendActivity_competitive_complete
+      activity:
+        text:
+          - "✓ Competitive Landscape Agent completed."
+          - "Now validating both specialist outputs..."
+    
+    # Route to Validate Outputs
+    - kind: GoToDialog
+      id: GoToDialog_validate
+      dialog: ValidateOutputs

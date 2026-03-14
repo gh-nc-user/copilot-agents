@@ -1,0 +1,252 @@
+# Name: Validate Outputs
+# Description: Comprehensive validation of specialist agent outputs including Confidence & Evidence checks
+kind: AdaptiveDialog
+beginDialog:
+  kind: OnRecognizedIntent
+  intent:
+    triggerQueries:
+      - Validate specialist outputs
+  id: Orchestrator_Validate_001
+  actions:
+    # Send validation starting message
+    - kind: SendActivity
+      id: SendActivity_validation_starting
+      activity:
+        text:
+          - "🔍 Validating specialist agent outputs..."
+    
+    # Check Market Agent output completeness
+    - kind: ConditionGroup
+      id: ConditionGroup_validate_market
+      condition: "=!IsBlank(Topic.MarketAgentFindings)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_market_valid
+          variable: Topic.MarketOutputValid
+          value: "=true"
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_market_invalid
+          variable: Topic.MarketOutputValid
+          value: "=false"
+        - kind: SendActivity
+          id: SendActivity_market_incomplete
+          activity:
+            text:
+              - "❌ Market Analysis output is empty or null."
+              - "Cannot proceed without market analysis."
+    
+    # Check Competitive Agent output completeness
+    - kind: ConditionGroup
+      id: ConditionGroup_validate_competitive
+      condition: "=!IsBlank(Topic.CompetitiveAgentFindings)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_competitive_valid
+          variable: Topic.CompetitiveOutputValid
+          value: "=true"
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_competitive_invalid
+          variable: Topic.CompetitiveOutputValid
+          value: "=false"
+        - kind: SendActivity
+          id: SendActivity_competitive_incomplete
+          activity:
+            text:
+              - "❌ Competitive Analysis output is empty or null."
+              - "Cannot proceed without competitive analysis."
+    
+    # Validate Market Agent has Confidence & Evidence section
+    - kind: ConditionGroup
+      id: ConditionGroup_market_confidence_validation
+      condition: "=Topic.MarketOutputValid && Topic.MarketHasConfidenceSection"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_market_confidence_valid
+          variable: Topic.MarketConfidenceValid
+          value: "=true"
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_market_confidence_invalid
+          variable: Topic.MarketConfidenceValid
+          value: "=false"
+        - kind: SendActivity
+          id: SendActivity_market_confidence_missing
+          activity:
+            text:
+              - "⚠️ Market Analysis missing 'Confidence & Evidence' section."
+              - "Output will be flagged in memo for additional review."
+    
+    # Validate Competitive Agent has Confidence & Evidence section
+    - kind: ConditionGroup
+      id: ConditionGroup_competitive_confidence_validation
+      condition: "=Topic.CompetitiveOutputValid && Topic.CompetitiveHasConfidenceSection"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_competitive_confidence_valid
+          variable: Topic.CompetitiveConfidenceValid
+          value: "=true"
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_competitive_confidence_invalid
+          variable: Topic.CompetitiveConfidenceValid
+          value: "=false"
+        - kind: SendActivity
+          id: SendActivity_competitive_confidence_missing
+          activity:
+            text:
+              - "⚠️ Competitive Analysis missing 'Confidence & Evidence' section."
+              - "Output will be flagged in memo for additional review."
+    
+    # Check for low confidence indicators in Market Analysis
+    - kind: ConditionGroup
+      id: ConditionGroup_market_low_confidence
+      condition: "=Topic.MarketOutputValid && (Find(Lower(Topic.MarketAgentFindings), \"low\") > 0 || Find(Lower(Topic.MarketAgentFindings), \"limited data\") > 0 || Find(Lower(Topic.MarketAgentFindings), \"uncertain\") > 0)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_market_low_confidence_flag
+          variable: Topic.MarketLowConfidence
+          value: "=true"
+        - kind: SendActivity
+          id: SendActivity_market_low_confidence
+          activity:
+            text:
+              - "⚠️ Market Analysis indicates LOW CONFIDENCE in findings."
+              - "This suggests: limited market data, speculative estimates, or incomplete research."
+              - "Recommendation: Flag for additional due diligence."
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_market_high_confidence_flag
+          variable: Topic.MarketLowConfidence
+          value: "=false"
+    
+    # Check for low confidence indicators in Competitive Analysis
+    - kind: ConditionGroup
+      id: ConditionGroup_competitive_low_confidence
+      condition: "=Topic.CompetitiveOutputValid && (Find(Lower(Topic.CompetitiveAgentFindings), \"low\") > 0 || Find(Lower(Topic.CompetitiveAgentFindings), \"limited data\") > 0 || Find(Lower(Topic.CompetitiveAgentFindings), \"uncertain\") > 0)"
+      actions:
+        - kind: SetVariable
+          id: SetVariable_competitive_low_confidence_flag
+          variable: Topic.CompetitiveLowConfidence
+          value: "=true"
+        - kind: SendActivity
+          id: SendActivity_competitive_low_confidence
+          activity:
+            text:
+              - "⚠️ Competitive Analysis indicates LOW CONFIDENCE in findings."
+              - "This suggests: incomplete competitive data, unclear positioning, or emerging market."
+              - "Recommendation: Flag for additional due diligence."
+      elseActions:
+        - kind: SetVariable
+          id: SetVariable_competitive_high_confidence_flag
+          variable: Topic.CompetitiveLowConfidence
+          value: "=false"
+    
+    # Decision point: Both outputs present and valid?
+    - kind: ConditionGroup
+      id: ConditionGroup_both_outputs_present
+      condition: "=Topic.MarketOutputValid && Topic.CompetitiveOutputValid"
+      actions:
+        - kind: SendActivity
+          id: SendActivity_both_outputs_present
+          activity:
+            text:
+              - "✓ Both specialist analyses are present."
+        
+        # Check if both have confidence sections
+        - kind: ConditionGroup
+          id: ConditionGroup_both_confidence_present
+          condition: "=Topic.MarketConfidenceValid && Topic.CompetitiveConfidenceValid"
+          actions:
+            - kind: SendActivity
+              id: SendActivity_both_confidence_valid
+              activity:
+                text:
+                  - "✓ Both analyses include Confidence & Evidence sections."
+            
+            # Check for combined low confidence
+            - kind: ConditionGroup
+              id: ConditionGroup_combined_low_confidence
+              condition: "=Topic.MarketLowConfidence && Topic.CompetitiveLowConfidence"
+              actions:
+                - kind: SendActivity
+                  id: SendActivity_combined_low_confidence_warning
+                  activity:
+                    text:
+                      - "⚠️ BOTH analyses report LOW CONFIDENCE."
+                      - "This indicates significant data gaps or market uncertainty."
+                      - "Proceeding with memo generation, but flagging for IC review."
+                - kind: SetVariable
+                  id: SetVariable_flag_for_ic_review
+                  variable: Topic.FlagForICReview
+                  value: "=true"
+              elseActions:
+                - kind: SendActivity
+                  id: SendActivity_confidence_acceptable
+                  activity:
+                    text:
+                      - "✓ Confidence levels are acceptable for proceeding."
+            
+            # Proceed to memo generation
+            - kind: SendActivity
+              id: SendActivity_validation_pass_full
+              activity:
+                text:
+                  - "✓ All validations passed. Ready to generate professional memo."
+            - kind: GoToDialog
+              id: GoToDialog_call_writer_valid
+              dialog: CallMemoWriter
+          
+          elseActions:
+            - kind: SendActivity
+              id: SendActivity_partial_confidence_sections
+              activity:
+                text:
+                  - "⚠️ One or both analyses missing Confidence & Evidence sections."
+                  - "Continuing with memo generation, but output will be flagged."
+            - kind: Question
+              id: Question_accept_incomplete_confidence
+              prompt: "Proceed with incomplete confidence sections in the memo?"
+              entity: StringPrebuiltEntity
+              variable: Topic.AcceptIncompleteConfidence
+              options:
+                - "Yes, proceed to memo"
+                - "No, request additional analysis"
+            
+            - kind: ConditionGroup
+              id: ConditionGroup_user_accepts_incomplete
+              condition: "=Topic.AcceptIncompleteConfidence = \"Yes, proceed to memo\""
+              actions:
+                - kind: GoToDialog
+                  id: GoToDialog_call_writer_incomplete
+                  dialog: CallMemoWriter
+              elseActions:
+                - kind: SendActivity
+                  id: SendActivity_request_reanalysis
+                  activity:
+                    text:
+                      - "Understood. Please provide additional context or documents to improve analysis quality."
+                - kind: Question
+                  id: Question_provide_additional_context
+                  prompt: "What additional information can you provide for the analysis?"
+                  entity: StringPrebuiltEntity
+                  variable: Topic.AdditionalContext
+      
+      elseActions:
+        - kind: SendActivity
+          id: SendActivity_outputs_missing
+          activity:
+            text:
+              - "❌ CRITICAL: One or both specialist analyses are missing."
+              - "Cannot generate memo without complete inputs."
+        
+        # Escalate to human
+        - kind: SendActivity
+          id: SendActivity_escalating_to_human
+          activity:
+            text:
+              - "Escalating to human review team for assistance..."
+        - kind: GoToDialog
+          id: GoToDialog_escalate_missing_output
+          dialog: Escalate

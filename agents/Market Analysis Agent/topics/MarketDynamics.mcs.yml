@@ -1,0 +1,47 @@
+# Name: MarketDynamics
+# Sub-topic for analyzing market dynamics and drivers
+kind: AdaptiveDialog
+id: AdaptiveDialog_MarketDynamics
+topicId: MarketDynamics
+beginDialog:
+  kind: OnDialogCall
+  actions:
+    # 1. Intro to market dynamics
+    - kind: SendActivity
+      id: SendActivity_intro_a1j3k9
+      activity: "## Market Dynamics & Drivers\nUnderstanding growth acceleration, constraints, and regulatory landscape"
+
+    # 2. Question: Growth drivers
+    - kind: Question
+      id: Question_growthDrivers_b4m5n2
+      activity: "What are the primary growth drivers? (e.g., AI adoption, regulatory change, platform shift, demographic trends)"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.growthDrivers
+
+    # 3. SearchAndSummarizeContent for market trends
+    - kind: SearchAndSummarizeContent
+      id: SearchAndSummarizeContent_trends_c6p1k7
+      query: "=concatenate(\"Search for market trends in \", Topic.sector, \" industry including technology adoption acceleration, regulatory changes, competitive landscape shifts, and growth catalysts\")"
+
+    # 4. Report search results
+    - kind: SendActivity
+      id: SendActivity_research_findings_d8r3m4
+      activity: "### Market Research Findings\nAnalyzing market trends and catalysts in your sector..."
+
+    # 5. Question: Market constraints
+    - kind: Question
+      id: Question_constraints_e2s5j9
+      activity: "What are the primary market constraints? (e.g., high switching costs, incumbent friction, regulatory barriers, capital intensity)"
+      inputType:
+        kind: TextInput
+      variable: init:Topic.constraints
+
+    # 6. SendActivity with dynamics summary (Power Fx)
+    - kind: SendActivity
+      id: SendActivity_dynamics_summary_f7t2n6
+      activity: "=concatenate(\"### Dynamics Summary\\n**Growth Drivers**: \", Topic.growthDrivers, \"\\n**Constraints**: \", Topic.constraints, \"\\n**Trend Analysis**: Market research consolidated for strategic planning\")"
+
+    # End dialog
+    - kind: EndDialog
+      id: EndDialog_Dynamics_g9v1k5
