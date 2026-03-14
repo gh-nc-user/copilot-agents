@@ -1,6 +1,6 @@
 kind: BotEntity
 displayName: Competitive Landscape Agent
-schemaName: copilots_header_67a52
+schemaName: copilots_header_comp1
 accessControlPolicy: GroupMembership
 authenticationMode: Integrated
 authenticationTrigger: Always
@@ -10,7 +10,7 @@ configuration:
 
   isAgentConnectable: true
   gPTSettings:
-    defaultSchemaName: copilots_header_67a52.gpt.default
+    defaultSchemaName: copilots_header_comp1.gpt.default
 
   aISettings:
     useModelKnowledge: true
@@ -18,13 +18,14 @@ configuration:
     isSemanticSearchEnabled: true
     optInUseLatestModels: false
 
+  conversationStarters:
+    - displayText: Identify competitors and substitutes and assess evidence quality
+    - displayText: Map positioning and differentiation claims
+    - displayText: Assess category crowding and structural risks
+
   recognizer:
     kind: GenerativeAIRecognizer
 
 publishedOn: 2026-03-13T18:20:41.0000000Z
 template: default-2.1.0
 language: 1033
-conversationStarters:
-  - "Identify competitors and substitutes and assess evidence quality"
-  - "Map positioning and differentiation claims"
-  - "Assess category crowding and structural risks"

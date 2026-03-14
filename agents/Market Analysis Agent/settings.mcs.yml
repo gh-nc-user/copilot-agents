@@ -1,6 +1,6 @@
 kind: BotEntity
 displayName: Market Analysis Agent
-schemaName: copilots_header_67a52
+schemaName: copilots_header_mkt01
 accessControlPolicy: GroupMembership
 authenticationMode: Integrated
 authenticationTrigger: Always
@@ -10,7 +10,7 @@ configuration:
 
   isAgentConnectable: true
   gPTSettings:
-    defaultSchemaName: copilots_header_67a52.gpt.default
+    defaultSchemaName: copilots_header_mkt01.gpt.default
 
   aISettings:
     useModelKnowledge: true

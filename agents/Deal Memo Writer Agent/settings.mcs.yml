@@ -1,6 +1,6 @@
 kind: BotEntity
 displayName: Deal Memo Writer Agent
-schemaName: copilots_header_67a52
+schemaName: copilots_header_mem01
 accessControlPolicy: GroupMembership
 authenticationMode: Integrated
 authenticationTrigger: Always
@@ -10,13 +10,18 @@ configuration:
 
   isAgentConnectable: true
   gPTSettings:
-    defaultSchemaName: copilots_header_67a52.gpt.default
+    defaultSchemaName: copilots_header_mem01.gpt.default
 
   aISettings:
     useModelKnowledge: true
     isFileAnalysisEnabled: true
     isSemanticSearchEnabled: true
     optInUseLatestModels: false
+
+  conversationStarters:
+    - displayText: Draft an IC memo from market and competitive analysis outputs
+    - displayText: Synthesize deal analysis into a structured investment memo
+    - displayText: Produce an executive summary with key risk and opportunity flags
 
   recognizer:
     kind: GenerativeAIRecognizer

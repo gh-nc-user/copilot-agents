@@ -1,6 +1,6 @@
 kind: BotEntity
 displayName: Deal Orchestrator (PM)
-schemaName: copilots_header_67a52
+schemaName: copilots_header_orch1
 accessControlPolicy: GroupMembership
 authenticationMode: Integrated
 authenticationTrigger: Always
@@ -10,7 +10,7 @@ configuration:
 
   isAgentConnectable: true
   gPTSettings:
-    defaultSchemaName: copilots_header_67a52.gpt.default
+    defaultSchemaName: copilots_header_orch1.gpt.default
 
   aISettings:
     useModelKnowledge: true
@@ -18,6 +18,11 @@ configuration:
     isSemanticSearchEnabled: true
     optInUseLatestModels: false
     OneDriveAndSharePoint: true
+
+  conversationStarters:
+    - displayText: Coordinate a standard VC diligence pass on this deal
+    - displayText: Run full market, competitive, and memo analysis
+    - displayText: Analyze this deal document and produce an IC memo
 
   recognizer:
     kind: GenerativeAIRecognizer

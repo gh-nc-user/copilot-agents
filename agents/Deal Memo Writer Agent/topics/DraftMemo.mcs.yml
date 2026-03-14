@@ -7,7 +7,6 @@ beginDialog:
       - Create memo
       - Write investment memo
       - Synthesize specialist outputs
-  id: OnRecognizedIntent_DraftMemo_i1t9
   actions:
     - kind: SendActivity
       id: SendActivity_welcome

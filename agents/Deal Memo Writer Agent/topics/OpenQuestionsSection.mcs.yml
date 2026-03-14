@@ -4,7 +4,6 @@ beginDialog:
   kind: OnRecognizedIntent
   id: OnRecognizedIntent_OpenQuestionsSection_u4w5
   intent:
-  id: OnRecognizedIntent_OpenQuestionsSection_m5x4
   actions:
     - kind: Question
       id: Question_userQuestions

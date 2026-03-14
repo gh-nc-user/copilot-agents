@@ -4,7 +4,6 @@ beginDialog:
   kind: OnRecognizedIntent
   id: OnRecognizedIntent_CompetitiveLandscapeSection_d6f4
   intent:
-  id: OnRecognizedIntent_CompetitiveLandscapeSection_g8r7
   actions:
     - kind: SendActivity
       id: SendActivity_competitive_processing
