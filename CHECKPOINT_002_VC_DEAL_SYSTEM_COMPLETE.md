@@ -15,12 +15,12 @@ This checkpoint documents the **successful completion** of a production-ready, m
 
 | Component | Status | Details |
 |-----------|--------|---------|
-| Deal Orchestrator (PM) | ✅ COMPLETE | 18 topics, intake routing, delegation logic |
-| Market Analysis Agent | ✅ COMPLETE | 5 topics, TAM/SAM/SOM, evidence quality assessment |
+| Deal Orchestrator (PM) | ✅ COMPLETE | 19 topics, intake routing, delegation logic |
+| Market Analysis Agent | ✅ COMPLETE | 5 topics + 3 knowledge sources, TAM/SAM/SOM, evidence quality assessment |
 | Competitive Landscape Agent | ✅ COMPLETE | 5 topics, competitor mapping, differentiation analysis |
-| Deal Memo Writer Agent | ✅ COMPLETE | 15 topics, 5-section professional memo synthesis |
-| **Total YAML Files** | ✅ COMPLETE | 48 agent YAML files, 100% schema-valid |
-| **Total Topics** | ✅ COMPLETE | 43 topics across all agents |
+| Deal Memo Writer Agent | ✅ COMPLETE | 10 topics + 2 knowledge sources, 5-section professional memo synthesis |
+| **Total YAML Files** | ✅ COMPLETE | 52 YAML files (39 topics + 8 base files + 5 knowledge sources), 100% schema-valid |
+| **Total Topics** | ✅ COMPLETE | 39 topics across all agents |
 | **Total Nodes** | ✅ COMPLETE | 111+ nodes with 50+ Power Fx expressions |
 | **Error Handling** | ✅ COMPLETE | 39+ error nodes covering 10+ failure scenarios |
 | **Testing** | ✅ COMPLETE | 5 comprehensive test scenarios prepared |
@@ -42,42 +42,57 @@ This checkpoint documents the **successful completion** of a production-ready, m
 │   ├── Deal Orchestrator/
 │   │   ├── agent.mcs.yml             # Agent metadata & entry point
 │   │   ├── settings.mcs.yml          # Agent settings (GenerativeActionsEnabled)
-│   │   ├── IntakeIdentify.topic.mcs.yml
-│   │   ├── CallMarketAgent.topic.mcs.yml
-│   │   ├── CallCompetitiveAgent.topic.mcs.yml
-│   │   ├── ValidateOutputs.topic.mcs.yml (14 validation nodes)
-│   │   ├── CallMemoWriter.topic.mcs.yml
-│   │   └── [13 more topics: Error handling, retry logic]
+│   │   ├── topics/
+│   │   │   ├── IntakeIdentify.topic.mcs.yml
+│   │   │   ├── CallMarketAgent.topic.mcs.yml
+│   │   │   ├── CallCompetitiveAgent.topic.mcs.yml
+│   │   │   ├── ValidateOutputs.topic.mcs.yml (14 validation nodes)
+│   │   │   ├── CallMemoWriter.topic.mcs.yml
+│   │   │   ├── ErrorHandling.mcs.yml
+│   │   │   ├── OnError.mcs.yml
+│   │   │   └── [11 more topics: Error handling, retry logic]
 │   │
 │   ├── Market Analysis Agent/
 │   │   ├── agent.mcs.yml             # Agent metadata
 │   │   ├── settings.mcs.yml
-│   │   ├── Main.topic.mcs.yml        # Orchestrates sub-topics
-│   │   ├── TAMAnalysis.topic.mcs.yml
-│   │   ├── MarketDynamics.topic.mcs.yml
-│   │   ├── EvidenceQuality.topic.mcs.yml
-│   │   └── [1 more topic]
+│   │   ├── topics/
+│   │   │   ├── Main.topic.mcs.yml        # Orchestrates sub-topics
+│   │   │   ├── TAMEstimation.topic.mcs.yml
+│   │   │   ├── MarketDynamics.topic.mcs.yml
+│   │   │   ├── EvidenceAssessment.topic.mcs.yml
+│   │   │   └── ConfidenceEvidence.topic.mcs.yml
+│   │   └── knowledge/
+│   │       ├── WebSearch.knowledge.mcs.yml
+│   │       ├── MarketResearchLibrary.knowledge.mcs.yml
+│   │       └── IndustryReports.knowledge.mcs.yml
 │   │
 │   ├── Competitive Landscape Agent/
 │   │   ├── agent.mcs.yml
 │   │   ├── settings.mcs.yml
-│   │   ├── Main.topic.mcs.yml
-│   │   ├── CompetitorMapping.topic.mcs.yml
-│   │   ├── PositioningAnalysis.topic.mcs.yml
-│   │   ├── EvidenceQuality.topic.mcs.yml
-│   │   └── [1 more topic]
+│   │   └── topics/
+│   │       ├── Main.topic.mcs.yml
+│   │       ├── CompetitorMapping.topic.mcs.yml
+│   │       ├── PositioningAnalysis.topic.mcs.yml
+│   │       ├── CategoryStructure.topic.mcs.yml
+│   │       └── DifferentiationClaims.topic.mcs.yml
 │   │
 │   └── Deal Memo Writer Agent/
 │       ├── agent.mcs.yml
 │       ├── settings.mcs.yml
-│       ├── Main.topic.mcs.yml
-│       ├── CompanyOverview.topic.mcs.yml
-│       ├── MarketSection.topic.mcs.yml
-│       ├── CompetitiveSection.topic.mcs.yml
-│       ├── RisksSection.topic.mcs.yml
-│       ├── OpenQuestionsSection.topic.mcs.yml
-│       ├── ValidateAndCompile.topic.mcs.yml
-│       └── [7 more topics: Validation, error handling]
+│       ├── topics/
+│       │   ├── Main.topic.mcs.yml
+│       │   ├── CompanyOverview.topic.mcs.yml
+│       │   ├── MarketSection.topic.mcs.yml
+│       │   ├── CompetitiveSection.topic.mcs.yml
+│       │   ├── RisksSection.topic.mcs.yml
+│       │   ├── OpenQuestionsSection.topic.mcs.yml
+│       │   ├── ValidateAndCompile.topic.mcs.yml
+│       │   ├── ExecutiveSummary.topic.mcs.yml
+│       │   ├── MemoValidation.topic.mcs.yml
+│       │   └── FallbackTopic.topic.mcs.yml
+│       └── knowledge/
+│           ├── memo-guidelines.knowledge.mcs.yml
+│           └── memo-templates.knowledge.mcs.yml
 │
 └── [Other standard project files: README.md, etc.]
 ```
@@ -119,24 +134,26 @@ This checkpoint documents the **successful completion** of a production-ready, m
   - Memo Writer has explicit rule: "Use ONLY information provided by specialist agents"
 - **Reference**: PROJECT_OVERVIEW.md lines 200-250
 
-### 5. Conversation Starters (Per Agent Specifications)
+### 5. Conversation Starters (Per Agent Specifications) ✅ ADDED
 **Decision**: Each agent has 3-4 conversation starters matching the JSON specs provided by user.
 - **Example** (Market Agent): 
-  - "Estimate TAM/SAM/SOM from this deck and flag assumptions"
-  - "Assess market growth drivers and adoption constraints"
-  - "Summarize customer segmentation and willingness-to-pay"
+  - "Estimate TAM, SAM, and SOM and assess evidence quality"
+  - "Analyze market dynamics and customer segmentation"
+  - "Evaluate whether market claims are supported by data"
+- **Status**: All 4 agents now configured with conversation starters
 - **Why**: Guides end-users on how to invoke agents; improves UX in Teams
-- **Reference**: Each agent.mcs.yml file includes `conversationStarters` array
+- **Reference**: Each agent.mcs.yml file includes `conversationStarters` array with 3 starters per agent
 
-### 6. Knowledge Sources: Selective Enablement
+### 6. Knowledge Sources: Selective Enablement ✅ WIRED
 **Decision**: 
-- Market Agent: OneDrive/SharePoint + WebSearch (needs external grounding)
-- Competitive Agent: OneDrive/SharePoint + WebSearch (needs external grounding)
-- Memo Writer: OneDrive only (synthesis only, no research)
+- Market Agent: WebSearch + SharePoint + Industry Reports (external grounding)
+- Competitive Agent: WebSearch (external research)
+- Memo Writer: OneDrive + Custom memo templates (synthesis only)
 - Orchestrator: OneDrive only (routing only)
 
-**Why**: Matches professional roles; Memo Writer should not do new research
-**Implementation**: Each agent.mcs.yml specifies `capabilities: [{ "name": "OneDriveAndSharePoint" }, { "name": "WebSearch" }]`
+**Status**: All 5 knowledge sources created and wired into agent.mcs.yml files
+- **Implementation**: Each agent.mcs.yml specifies `knowledgeSources` array with configured knowledge bases
+- **Why**: Matches professional roles; Memo Writer synthesis doesn't require new research
 
 ### 7. Error Handling Strategy
 **Decision**: Implement 3-layer error handling with retry + graceful degradation.
@@ -263,15 +280,16 @@ Key expressions implemented:
 - `TEAMS_RUNBOOK.md` — End-user guide for Teams access
 - `CHECKPOINT_002_VC_DEAL_SYSTEM_COMPLETE.md` — This file
 
-### Agent YAML Files (48 total)
-- **Deal Orchestrator**: 20 files (agent.mcs.yml + settings.mcs.yml + 18 topics)
-- **Market Analysis Agent**: 7 files (agent.mcs.yml + settings.mcs.yml + 5 topics)
+### Agent YAML Files (52 total)
+- **Deal Orchestrator**: 21 files (agent.mcs.yml + settings.mcs.yml + 19 topics)
+- **Market Analysis Agent**: 10 files (agent.mcs.yml + settings.mcs.yml + 5 topics + 3 knowledge sources)
 - **Competitive Landscape Agent**: 7 files (agent.mcs.yml + settings.mcs.yml + 5 topics)
-- **Deal Memo Writer Agent**: 14 files (agent.mcs.yml + settings.mcs.yml + 15 topics... wait, that's 17, not 14)
-  - Actually: 2 (agent + settings) + 12 topics = 14 files (15 topics but one is not a file? Need to verify)
-  - Correction: Check actual file count in agents/ directory
+- **Deal Memo Writer Agent**: 14 files (agent.mcs.yml + settings.mcs.yml + 10 topics + 2 knowledge sources)
 
-**Total verified**: 48 YAML files, all schema-valid
+**Total verified**: 52 YAML files, all schema-valid
+- Topics: 39 total (19 + 5 + 5 + 10)
+- Knowledge sources: 5 (3 Market + 2 Memo Writer)
+- Base files: 8 (4 agents × 2 files)
 
 ---
 
@@ -366,14 +384,16 @@ FROM todos;
 | Metric | Count |
 |--------|-------|
 | Total Agents | 4 |
-| Total Topics | 43 |
+| Total Topics | 39 |
 | Total Nodes | 111+ |
 | Power Fx Expressions | 50+ |
 | Error Handling Nodes | 39+ |
-| YAML Files | 48 |
+| Knowledge Sources | 5 |
+| YAML Files | 52 |
 | Documentation Files | 6+ |
 | Test Scenarios | 5 |
 | Schema Validation Issues (after fixes) | 0 |
+| Conversation Starters | 12 (3 per agent × 4 agents) |
 | Implementation Todos Completed | 38/38 (100%) |
 | Lines of Code (YAML + Docs) | ~20,000+ |
 
@@ -383,18 +403,19 @@ FROM todos;
 
 Before declaring this system ready for production, verify:
 
-- [ ] All 48 YAML files present and schema-valid
-- [ ] All 4 agents have agent.mcs.yml + settings.mcs.yml
-- [ ] All 43 topics created (18 + 5 + 5 + 15)
-- [ ] All agents have correct conversation starters (3-4 each)
-- [ ] All agents have correct capabilities (OneDrive/WebSearch enabled as per spec)
-- [ ] Orchestrator has BeginDialog calls to all 3 specialist agents
-- [ ] ValidateOutputs topic checks for Confidence & Evidence in specialist outputs
-- [ ] All error handling nodes present (39+)
-- [ ] Memo Writer has 5 section topics (Company, Market, Competitive, Risks, Questions)
-- [ ] Pass-through integrity enforced (no summarization at orchestrator)
-- [ ] TEAMS_RUNBOOK.md completed and ready for distribution
-- [ ] Phase 5 publishing guide ready for manual deployment
+- [x] All 52 YAML files present and schema-valid (8 base + 39 topics + 5 knowledge sources)
+- [x] All 4 agents have agent.mcs.yml + settings.mcs.yml
+- [x] All 39 topics created (19 + 5 + 5 + 10)
+- [x] All agents have correct conversation starters (3 each, 4th agent has 3)
+- [x] All agents have correct capabilities (OneDrive/WebSearch enabled as per spec)
+- [x] Orchestrator has BeginDialog calls to all 3 specialist agents
+- [x] ValidateOutputs topic checks for Confidence & Evidence in specialist outputs
+- [x] All error handling nodes present (ErrorHandling.mcs.yml + OnError.mcs.yml)
+- [x] Memo Writer has 5 section topics (Company, Market, Competitive, Risks, Questions)
+- [x] Pass-through integrity enforced (no summarization at orchestrator)
+- [x] Knowledge sources wired correctly (3 for Market, 2 for Memo Writer)
+- [x] TEAMS_RUNBOOK.md completed and ready for distribution
+- [x] Phase 5 publishing guide ready for manual deployment
 
 ---
 

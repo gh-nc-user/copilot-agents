@@ -21,6 +21,13 @@ instructions: |
    - Founder-provided claims (cite slide/page if known)
    - Third-party sources (list URLs or publications)
    - Assumptions made due to missing data
+conversationStarters:
+  - title: Estimate TAM, SAM, and SOM and assess evidence quality
+    text: Estimate TAM, SAM, and SOM and assess evidence quality
+  - title: Analyze market dynamics and customer segmentation
+    text: Analyze market dynamics and customer segmentation
+  - title: Evaluate whether market claims are supported by data
+    text: Evaluate whether market claims are supported by data
 gptCapabilities:
   webBrowsing: true
   knowledgeSources:

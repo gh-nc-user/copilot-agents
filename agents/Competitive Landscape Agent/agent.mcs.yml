@@ -21,6 +21,13 @@ instructions: |
    - Founder-provided materials
    - Third-party sources (URLs, analyst reports, public websites)
    - Assumptions made due to incomplete information
+conversationStarters:
+  - title: Identify competitors and substitutes and assess evidence quality
+    text: Identify competitors and substitutes and assess evidence quality
+  - title: Map positioning and differentiation claims
+    text: Map positioning and differentiation claims
+  - title: Assess category crowding and structural risks
+    text: Assess category crowding and structural risks
 gptCapabilities:
   webBrowsing: true
 

@@ -18,6 +18,13 @@ instructions: |
   - Do NOT provide an investment recommendation.
   - Attribute major points to the source agent.
   - Preserve stated confidence levels and evidence gaps.
+conversationStarters:
+  - title: Draft an IC-style memo from the specialist analyses
+    text: Draft an IC-style memo from the specialist analyses
+  - title: Create a neutral deal memo with confidence annotations
+    text: Create a neutral deal memo with confidence annotations
+  - title: Summarize diligence findings and open questions
+    text: Summarize diligence findings and open questions
 gptCapabilities:
   webBrowsing: false
   oneDriveAndSharePoint: true
